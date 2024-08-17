@@ -8,8 +8,9 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { Text, View } from "react-native";
+import { useColorScheme } from "@/src/global/hooks/useColorScheme";
+import { ThemedView } from "@/src/global/components/ThemedView";
+import { ThemedText } from "@/src/global/components/ThemedText";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -32,9 +33,11 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text style={{ fontWeight: "bold" }}>CapturePoke</Text>
-      </View>
+      <ThemedView
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
+        <ThemedText style={{ fontWeight: "bold" }}>CapturePoke</ThemedText>
+      </ThemedView>
     </ThemeProvider>
   );
 }
