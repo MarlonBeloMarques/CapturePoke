@@ -1,3 +1,4 @@
+import getPictureFake from "@/test/doubles/fakers/getPictureFake";
 import { renderHook } from "@testing-library/react-native";
 
 describe("PokemonList: useCard", () => {
@@ -13,6 +14,28 @@ describe("PokemonList: useCard", () => {
 
     expect(result.current.name).toEqual("");
   });
+
+  test("should get the picture with success", () => {
+    const picture = getPictureFake();
+    const { result } = renderHook(() => useCard({ name: "", picture }));
+
+    expect(result.current.picture).toEqual(picture);
+  });
+
+  test("should get the picture with success", () => {
+    const picture = getPictureFake();
+    const { result } = renderHook(() => useCard({ name: "", picture }));
+
+    expect(result.current.picture).toEqual(picture);
+  });
+
+  test.each([null, undefined])("should get the empty picture", (picture) => {
+    const { result } = renderHook(() =>
+      useCard({ name: "", picture: picture! }),
+    );
+
+    expect(result.current.picture).toEqual("");
+  });
 });
 
 type Props = {
@@ -20,7 +43,7 @@ type Props = {
   picture: string;
 };
 
-export const useCard = ({ name }: Props): Props => {
+export const useCard = ({ name, picture }: Props): Props => {
   const getName = () => {
     if (name) {
       const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
@@ -29,5 +52,5 @@ export const useCard = ({ name }: Props): Props => {
 
     return "";
   };
-  return { name: getName(), picture: "" };
+  return { name: getName(), picture: picture ?? "" };
 };
