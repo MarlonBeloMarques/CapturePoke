@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react-native";
 import getPictureFake from "@/test/doubles/fakers/getPictureFake";
 import getNameFake from "@/test/doubles/fakers/getNameFake";
-import Card from "@/src/pokemonList/components/card/Card";
+import Card from "@/src/pokemonList/components/card";
 
 describe("PokemonList: Card", () => {
   const picture = getPictureFake();

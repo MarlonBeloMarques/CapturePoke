@@ -1,11 +1,7 @@
 import { Image } from "react-native";
 import { ThemedText } from "@/src/global/components/ThemedText";
 import { ThemedView } from "@/src/global/components/ThemedView";
-
-type Props = {
-  name: string;
-  picture: string;
-};
+import { Props } from "./useCard";
 
 const Card = ({ name, picture }: Props) => {
   return (
