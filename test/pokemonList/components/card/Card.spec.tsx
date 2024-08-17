@@ -1,14 +1,15 @@
 import { ThemedText } from "@/src/global/components/ThemedText";
 import { ThemedView } from "@/src/global/components/ThemedView";
 import { render, screen } from "@testing-library/react-native";
-import { faker } from "@faker-js/faker";
 import { Image } from "react-native";
+import getPictureFake from "@/test/doubles/fakers/getPictureFake";
+import getNameFake from "@/test/doubles/fakers/getNameFake";
 
 describe("PokemonList: Card", () => {
-  const picture = faker.image.url();
+  const picture = getPictureFake();
 
   test("should show pokemon name with success", () => {
-    const name = faker.word.sample();
+    const name = getNameFake();
     render(<Card name={name} picture={picture} />);
 
     expect(screen.getByText(name)).toBeTruthy();
