@@ -2,7 +2,7 @@ import { ActivityIndicator, FlatList, View } from "react-native";
 import { Card } from "./components";
 import { ThemedText } from "../global/components/ThemedText";
 
-type Pokemon = {
+export type Pokemon = {
   name: string;
   picture: string;
 };
