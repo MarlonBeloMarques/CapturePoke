@@ -1,4 +1,4 @@
-import { FlatList, View } from "react-native";
+import { ActivityIndicator, FlatList, View } from "react-native";
 import { Card } from "./components";
 import { ThemedText } from "../global/components/ThemedText";
 
@@ -10,16 +10,25 @@ type Pokemon = {
 type Props = {
   list: Pokemon[];
   errorMessage: string;
+  findingPokemons: boolean;
   selectPokemon: (name: string) => void;
 };
 
-const PokemonList = ({ list, errorMessage, selectPokemon }: Props) => {
+const PokemonList = ({
+  list,
+  errorMessage,
+  findingPokemons,
+  selectPokemon,
+}: Props) => {
   return (
     <View>
-      {errorMessage && (
+      {!findingPokemons && errorMessage && (
         <ThemedText testID="error_message_id">{errorMessage}</ThemedText>
       )}
-      {list && list.length > 0 && (
+      {findingPokemons && (
+        <ActivityIndicator testID="loading_id" size={"large"} />
+      )}
+      {!findingPokemons && list && list.length > 0 && (
         <FlatList
           testID="pokemon_list_id"
           data={list}

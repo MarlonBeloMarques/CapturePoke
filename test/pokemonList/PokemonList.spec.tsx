@@ -21,7 +21,12 @@ describe("PokemonList", () => {
   test("should show pokemon list correctly", () => {
     const list = getPokemonListFake(5);
     render(
-      <PokemonList list={list} selectPokemon={() => {}} errorMessage="" />,
+      <PokemonList
+        list={list}
+        selectPokemon={() => {}}
+        errorMessage=""
+        findingPokemons={false}
+      />,
     );
 
     list.forEach((pokemon, index) => {
@@ -36,7 +41,12 @@ describe("PokemonList", () => {
     const selectPokemon = jest.fn();
     const list = getPokemonListFake(5);
     render(
-      <PokemonList list={list} selectPokemon={selectPokemon} errorMessage="" />,
+      <PokemonList
+        list={list}
+        selectPokemon={selectPokemon}
+        errorMessage=""
+        findingPokemons={false}
+      />,
     );
 
     fireEvent.press(screen.getAllByTestId("card_button_id")[3]);
@@ -54,6 +64,7 @@ describe("PokemonList", () => {
           list={list!}
           selectPokemon={selectPokemon}
           errorMessage=""
+          findingPokemons={false}
         />,
       );
 
@@ -61,7 +72,7 @@ describe("PokemonList", () => {
     },
   );
 
-  test("should show error message if errorMessage is not empty", () => {
+  test("should only show error message if errorMessage is not empty", () => {
     const selectPokemon = jest.fn();
     const errorMessage = "Parece que não encontramos nenhum pokemon.";
     render(
@@ -69,6 +80,7 @@ describe("PokemonList", () => {
         list={[]}
         selectPokemon={selectPokemon}
         errorMessage={errorMessage}
+        findingPokemons={false}
       />,
     );
 
@@ -84,10 +96,39 @@ describe("PokemonList", () => {
           list={[]}
           selectPokemon={selectPokemon}
           errorMessage={""}
+          findingPokemons={false}
         />,
       );
 
       expect(screen.queryByTestId("error_message_id")).not.toBeTruthy();
     },
   );
+
+  test("should only show the loading animation if findingPokemons is true", () => {
+    const list = getPokemonListFake(1);
+    render(
+      <PokemonList
+        list={list}
+        selectPokemon={() => {}}
+        errorMessage={""}
+        findingPokemons
+      />,
+    );
+
+    expect(screen.getByTestId("loading_id")).toBeTruthy();
+    expect(screen.queryByTestId("pokemon_list_id")).not.toBeTruthy();
+  });
+
+  test("should not show loading animation if findingPokemons is false", () => {
+    render(
+      <PokemonList
+        list={[]}
+        selectPokemon={() => {}}
+        errorMessage={""}
+        findingPokemons={false}
+      />,
+    );
+
+    expect(screen.queryByTestId("loading_id")).not.toBeTruthy();
+  });
 });
