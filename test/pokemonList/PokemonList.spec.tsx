@@ -40,4 +40,14 @@ describe("PokemonList", () => {
     expect(selectPokemon).toHaveBeenCalledTimes(1);
     expect(selectPokemon).toHaveBeenCalledWith(formatName(list[3].name));
   });
+
+  test.each([null, undefined, []])(
+    "should not show pokemon list if list is empty",
+    (list) => {
+      const selectPokemon = jest.fn();
+      render(<PokemonList list={list!} selectPokemon={selectPokemon} />);
+
+      expect(screen.queryByTestId("pokemon_list_id")).not.toBeTruthy();
+    },
+  );
 });
