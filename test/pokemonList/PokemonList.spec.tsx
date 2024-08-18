@@ -1,7 +1,6 @@
-import { Card } from "@/src/pokemonList/components";
 import { faker } from "@faker-js/faker";
+import PokemonList from "@/src/pokemonList/PokemonList";
 import { fireEvent, render, screen } from "@testing-library/react-native";
-import { FlatList } from "react-native";
 
 const getPokemonListFake = (length: number) => {
   const list = [];
@@ -42,22 +41,3 @@ describe("PokemonList", () => {
     expect(selectPokemon).toHaveBeenCalledWith(formatName(list[3].name));
   });
 });
-
-type Pokemon = {
-  name: string;
-  picture: string;
-};
-
-type Props = {
-  list: Pokemon[];
-  selectPokemon: (name: string) => void;
-};
-
-const PokemonList = ({ list, selectPokemon }: Props) => {
-  return (
-    <FlatList
-      data={list}
-      renderItem={({ item }) => <Card {...item} onPress={selectPokemon} />}
-    />
-  );
-};

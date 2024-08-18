@@ -24,4 +24,5 @@ export const Picture = styled.Image.attrs({
 
 export const Name = styled(ThemedText)`
   font-weight: bold;
+  font-size: 12px;
 `;
