@@ -1,14 +1,16 @@
 import useCard, { Props } from "./useCard";
-import { Name, Picture, Wrapper } from "./styles";
+import { Button, Name, Picture, Wrapper } from "./styles";
 
-export const Card = ({ name, picture }: Props) => {
+export const Card = ({ name, picture, onPress }: Props) => {
   return (
     <>
       {picture && (
-        <Wrapper>
-          <Picture testID="picture_id" source={{ uri: picture }} />
-          {name && <Name testID="name_id">{name}</Name>}
-        </Wrapper>
+        <Button testID="card_button_id" onPress={() => onPress(name)}>
+          <Wrapper>
+            <Picture testID="picture_id" source={{ uri: picture }} />
+            {name && <Name testID="name_id">{name}</Name>}
+          </Wrapper>
+        </Button>
       )}
     </>
   );

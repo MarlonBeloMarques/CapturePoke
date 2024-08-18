@@ -2,6 +2,10 @@ import { ThemedText } from "@/src/global/components/ThemedText";
 import { ThemedView } from "@/src/global/components/ThemedView";
 import styled from "styled-components/native";
 
+export const Button = styled.TouchableOpacity.attrs({
+  activeOpacity: 0.8,
+})``;
+
 export const Wrapper = styled(ThemedView)`
   border-color: white;
   border-width: 2px;
