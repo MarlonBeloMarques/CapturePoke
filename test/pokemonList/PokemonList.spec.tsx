@@ -84,6 +84,7 @@ describe("PokemonList", () => {
       />,
     );
 
+    expect(screen.queryByTestId("pokemon_list_id")).not.toBeTruthy();
     expect(screen.getByText(errorMessage)).toBeTruthy();
   });
 

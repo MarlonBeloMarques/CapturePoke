@@ -28,7 +28,7 @@ const PokemonList = ({
       {findingPokemons && (
         <ActivityIndicator testID="loading_id" size={"large"} />
       )}
-      {!findingPokemons && list && list.length > 0 && (
+      {!errorMessage && !findingPokemons && list && list.length > 0 && (
         <FlatList
           testID="pokemon_list_id"
           data={list}
