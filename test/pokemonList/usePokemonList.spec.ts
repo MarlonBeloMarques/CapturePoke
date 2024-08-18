@@ -30,6 +30,22 @@ describe("PokemonList: usePokemonList", () => {
 
     expect(result.current.list).toEqual([]);
   });
+
+  test("should get the errorMessage when pokemonList is empty", () => {
+    const pokemonList = new PokemonListFake(null!);
+    const { result } = renderHook(() => usePokemonList({ pokemonList }));
+
+    expect(result.current.errorMessage).toEqual(
+      "Parece que não encontramos nenhum pokemon.",
+    );
+  });
+
+  test("should get empty errorMessage when pokemonList is not empty", () => {
+    const pokemonList = new PokemonListFake(getPokemonListFake(5));
+    const { result } = renderHook(() => usePokemonList({ pokemonList }));
+
+    expect(result.current.errorMessage).toEqual("");
+  });
 });
 
 type Props = {
@@ -37,10 +53,18 @@ type Props = {
 };
 
 const usePokemonList = ({ pokemonList }: Props): PokemonListViewModel => {
+  const list = pokemonList.get() || [];
+  const getErrorMessage = () => {
+    if (list.length === 0) {
+      return "Parece que não encontramos nenhum pokemon.";
+    }
+
+    return "";
+  };
   return {
-    errorMessage: "",
+    errorMessage: getErrorMessage(),
     findingPokemons: false,
-    list: pokemonList.get() || [],
+    list,
     selectPokemon: () => {},
   };
 };
