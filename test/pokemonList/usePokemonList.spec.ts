@@ -4,6 +4,9 @@ import PokemonListViewModel, {
   Pokemon,
 } from "@/src/pokemonList/PokemonListViewModel";
 
+const formatName = (name: string) =>
+  name.charAt(0).toUpperCase() + name.slice(1);
+
 interface PokemonList {
   get: () => any[];
   finding: () => boolean;
@@ -62,27 +65,63 @@ describe("PokemonList: usePokemonList", () => {
 
     expect(result.current.findingPokemons).toEqual(false);
   });
+
+  test("should call the seePokemonDetails function correctly when calling the selectPokemon function", () => {
+    const list = getPokemonListFake(5);
+    const seePokemonDetails = jest.fn();
+    const { result } = makeSut({ seePokemonDetails, pokemonList: list });
+
+    result.current.selectPokemon(formatName(list[2].name));
+
+    expect(seePokemonDetails).toHaveBeenCalledTimes(1);
+    expect(seePokemonDetails).toHaveBeenCalledWith(list[2].id);
+  });
+
+  test("should not call the seePokemonDetails function if pokemon is not found", () => {
+    const list = getPokemonListFake(5);
+    const seePokemonDetails = jest.fn();
+    const { result } = makeSut({ seePokemonDetails, pokemonList: list });
+
+    result.current.selectPokemon("bulbasaur");
+
+    expect(seePokemonDetails).not.toHaveBeenCalled();
+  });
 });
 
 type SutProps = {
   pokemonList?: Pokemon[];
   findingPokemons?: boolean;
+  seePokemonDetails?: (id: number) => void;
 };
 
 const makeSut = ({
   pokemonList = getPokemonListFake(5),
   findingPokemons = false,
+  seePokemonDetails = () => {},
 }: SutProps) => {
   const list = new PokemonListFake(pokemonList, findingPokemons);
-  return renderHook(() => usePokemonList({ pokemonList: list }));
+  return renderHook(() =>
+    usePokemonList({ pokemonList: list, seePokemonDetails }),
+  );
 };
 
 type Props = {
   pokemonList: PokemonList;
+  seePokemonDetails: (id: number) => void;
 };
 
-const usePokemonList = ({ pokemonList }: Props): PokemonListViewModel => {
-  const list = pokemonList.get() || [];
+type PokemonDetail = {
+  name: string;
+  picture: string;
+  id: number;
+};
+
+const usePokemonList = ({
+  pokemonList,
+  seePokemonDetails,
+}: Props): PokemonListViewModel => {
+  const list: PokemonDetail[] = pokemonList.get() || [];
+
   const getErrorMessage = () => {
     if (list.length === 0) {
       return "Parece que não encontramos nenhum pokemon.";
@@ -90,10 +129,20 @@ const usePokemonList = ({ pokemonList }: Props): PokemonListViewModel => {
 
     return "";
   };
+
+  const selectPokemon = (name: string) => {
+    const foundPokemon = list.find(
+      (pokemon) => pokemon.name.toLowerCase() === name.toLowerCase(),
+    );
+    if (foundPokemon) {
+      seePokemonDetails(foundPokemon.id);
+    }
+  };
+
   return {
     errorMessage: getErrorMessage(),
     findingPokemons: pokemonList.finding(),
     list,
-    selectPokemon: () => {},
+    selectPokemon,
   };
 };
