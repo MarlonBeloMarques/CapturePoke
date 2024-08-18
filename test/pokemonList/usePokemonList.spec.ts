@@ -6,12 +6,20 @@ import PokemonListViewModel, {
 
 interface PokemonList {
   get: () => any[];
+  finding: () => boolean;
 }
 
 class PokemonListFake implements PokemonList {
-  constructor(readonly pokemonList: Pokemon[]) {}
+  constructor(
+    readonly pokemonList: Pokemon[],
+    readonly isFinding: boolean = true,
+  ) {}
   get = (): any[] => {
     return this.pokemonList;
+  };
+
+  finding = () => {
+    return this.isFinding;
   };
 }
 
@@ -46,6 +54,20 @@ describe("PokemonList: usePokemonList", () => {
 
     expect(result.current.errorMessage).toEqual("");
   });
+
+  test("should get the findingPokemons equals true when its getting the pokemonList", () => {
+    const pokemonList = new PokemonListFake(getPokemonListFake(5));
+    const { result } = renderHook(() => usePokemonList({ pokemonList }));
+
+    expect(result.current.findingPokemons).toEqual(true);
+  });
+
+  test("should get the findingPokemons equals false when it is finished of the get the pokemonList", () => {
+    const pokemonList = new PokemonListFake(getPokemonListFake(5), false);
+    const { result } = renderHook(() => usePokemonList({ pokemonList }));
+
+    expect(result.current.findingPokemons).toEqual(false);
+  });
 });
 
 type Props = {
@@ -63,7 +85,7 @@ const usePokemonList = ({ pokemonList }: Props): PokemonListViewModel => {
   };
   return {
     errorMessage: getErrorMessage(),
-    findingPokemons: false,
+    findingPokemons: pokemonList.finding(),
     list,
     selectPokemon: () => {},
   };
