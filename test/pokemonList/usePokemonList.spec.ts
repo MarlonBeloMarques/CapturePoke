@@ -26,22 +26,19 @@ class PokemonListFake implements PokemonList {
 describe("PokemonList: usePokemonList", () => {
   test("should get the pokemonList with success", () => {
     const list = getPokemonListFake(5);
-    const pokemonList = new PokemonListFake(list);
-    const { result } = renderHook(() => usePokemonList({ pokemonList }));
+    const { result } = makeSut({ pokemonList: list });
 
     expect(result.current.list).toEqual(list);
   });
 
   test("should get empty pokemonList", () => {
-    const pokemonList = new PokemonListFake(null!);
-    const { result } = renderHook(() => usePokemonList({ pokemonList }));
+    const { result } = makeSut({ pokemonList: null! });
 
     expect(result.current.list).toEqual([]);
   });
 
   test("should get the errorMessage when pokemonList is empty", () => {
-    const pokemonList = new PokemonListFake(null!);
-    const { result } = renderHook(() => usePokemonList({ pokemonList }));
+    const { result } = makeSut({ pokemonList: null! });
 
     expect(result.current.errorMessage).toEqual(
       "Parece que não encontramos nenhum pokemon.",
@@ -49,26 +46,36 @@ describe("PokemonList: usePokemonList", () => {
   });
 
   test("should get empty errorMessage when pokemonList is not empty", () => {
-    const pokemonList = new PokemonListFake(getPokemonListFake(5));
-    const { result } = renderHook(() => usePokemonList({ pokemonList }));
+    const { result } = makeSut({});
 
     expect(result.current.errorMessage).toEqual("");
   });
 
   test("should get the findingPokemons equals true when its getting the pokemonList", () => {
-    const pokemonList = new PokemonListFake(getPokemonListFake(5));
-    const { result } = renderHook(() => usePokemonList({ pokemonList }));
+    const { result } = makeSut({ findingPokemons: true });
 
     expect(result.current.findingPokemons).toEqual(true);
   });
 
   test("should get the findingPokemons equals false when it is finished of the get the pokemonList", () => {
-    const pokemonList = new PokemonListFake(getPokemonListFake(5), false);
-    const { result } = renderHook(() => usePokemonList({ pokemonList }));
+    const { result } = makeSut({ findingPokemons: false });
 
     expect(result.current.findingPokemons).toEqual(false);
   });
 });
+
+type SutProps = {
+  pokemonList?: Pokemon[];
+  findingPokemons?: boolean;
+};
+
+const makeSut = ({
+  pokemonList = getPokemonListFake(5),
+  findingPokemons = false,
+}: SutProps) => {
+  const list = new PokemonListFake(pokemonList, findingPokemons);
+  return renderHook(() => usePokemonList({ pokemonList: list }));
+};
 
 type Props = {
   pokemonList: PokemonList;
