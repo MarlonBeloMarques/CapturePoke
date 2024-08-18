@@ -20,7 +20,9 @@ const formatName = (name: string) =>
 describe("PokemonList", () => {
   test("should show pokemon list correctly", () => {
     const list = getPokemonListFake(5);
-    render(<PokemonList list={list} selectPokemon={() => {}} />);
+    render(
+      <PokemonList list={list} selectPokemon={() => {}} errorMessage="" />,
+    );
 
     list.forEach((pokemon, index) => {
       expect(screen.getByText(formatName(pokemon.name))).toBeTruthy();
@@ -33,7 +35,9 @@ describe("PokemonList", () => {
   test("should call selectPokemon function correctly when press one pokemon of list", () => {
     const selectPokemon = jest.fn();
     const list = getPokemonListFake(5);
-    render(<PokemonList list={list} selectPokemon={selectPokemon} />);
+    render(
+      <PokemonList list={list} selectPokemon={selectPokemon} errorMessage="" />,
+    );
 
     fireEvent.press(screen.getAllByTestId("card_button_id")[3]);
 
@@ -45,9 +49,45 @@ describe("PokemonList", () => {
     "should not show pokemon list if list is empty",
     (list) => {
       const selectPokemon = jest.fn();
-      render(<PokemonList list={list!} selectPokemon={selectPokemon} />);
+      render(
+        <PokemonList
+          list={list!}
+          selectPokemon={selectPokemon}
+          errorMessage=""
+        />,
+      );
 
       expect(screen.queryByTestId("pokemon_list_id")).not.toBeTruthy();
+    },
+  );
+
+  test("should show error message if errorMessage is not empty", () => {
+    const selectPokemon = jest.fn();
+    const errorMessage = "Parece que não encontramos nenhum pokemon.";
+    render(
+      <PokemonList
+        list={[]}
+        selectPokemon={selectPokemon}
+        errorMessage={errorMessage}
+      />,
+    );
+
+    expect(screen.getByText(errorMessage)).toBeTruthy();
+  });
+
+  test.each([null, undefined, ""])(
+    "should not show error message if errorMessage is empty",
+    () => {
+      const selectPokemon = jest.fn();
+      render(
+        <PokemonList
+          list={[]}
+          selectPokemon={selectPokemon}
+          errorMessage={""}
+        />,
+      );
+
+      expect(screen.queryByTestId("error_message_id")).not.toBeTruthy();
     },
   );
 });

@@ -1,5 +1,6 @@
 import { FlatList, View } from "react-native";
 import { Card } from "./components";
+import { ThemedText } from "../global/components/ThemedText";
 
 type Pokemon = {
   name: string;
@@ -8,12 +9,16 @@ type Pokemon = {
 
 type Props = {
   list: Pokemon[];
+  errorMessage: string;
   selectPokemon: (name: string) => void;
 };
 
-const PokemonList = ({ list, selectPokemon }: Props) => {
+const PokemonList = ({ list, errorMessage, selectPokemon }: Props) => {
   return (
     <View>
+      {errorMessage && (
+        <ThemedText testID="error_message_id">{errorMessage}</ThemedText>
+      )}
       {list && list.length > 0 && (
         <FlatList
           testID="pokemon_list_id"
