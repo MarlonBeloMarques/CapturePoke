@@ -1,25 +1,14 @@
 import { ActivityIndicator, FlatList, View } from "react-native";
 import { Card } from "./components";
 import { ThemedText } from "../global/components/ThemedText";
-
-export type Pokemon = {
-  name: string;
-  picture: string;
-};
-
-type Props = {
-  list: Pokemon[];
-  errorMessage: string;
-  findingPokemons: boolean;
-  selectPokemon: (name: string) => void;
-};
+import PokemonListViewModel from "./PokemonListViewModel";
 
 const PokemonList = ({
   list,
   errorMessage,
   findingPokemons,
   selectPokemon,
-}: Props) => {
+}: PokemonListViewModel) => {
   return (
     <View>
       {!findingPokemons && errorMessage && (

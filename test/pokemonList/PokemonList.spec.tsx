@@ -1,18 +1,7 @@
-import { faker } from "@faker-js/faker";
-import PokemonList, { Pokemon } from "@/src/pokemonList/PokemonList";
+import PokemonList from "@/src/pokemonList/PokemonList";
 import { fireEvent, render, screen } from "@testing-library/react-native";
-
-const getPokemonListFake = (length: number) => {
-  const list = [];
-  for (let index = 0; index < length; index++) {
-    list.push({
-      name: faker.word.sample(),
-      picture: faker.image.url(),
-    });
-  }
-
-  return list;
-};
+import { Pokemon } from "@/src/pokemonList/PokemonListViewModel";
+import getPokemonListFake from "../doubles/fakers/getPokemonListFake";
 
 const formatName = (name: string) =>
   name.charAt(0).toUpperCase() + name.slice(1);
