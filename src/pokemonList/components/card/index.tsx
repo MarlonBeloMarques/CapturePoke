@@ -1,37 +1,14 @@
-import { Image } from "react-native";
-import { ThemedText } from "@/src/global/components/ThemedText";
-import { ThemedView } from "@/src/global/components/ThemedView";
 import useCard, { Props } from "./useCard";
+import { Name, Picture, Wrapper } from "./styles";
 
-const Card = ({ name, picture }: Props) => {
+export const Card = ({ name, picture }: Props) => {
   return (
     <>
       {picture && (
-        <ThemedView
-          style={{
-            borderColor: "white",
-            borderWidth: 2,
-            borderRadius: 16,
-            justifyContent: "center",
-            alignItems: "center",
-            padding: 6,
-          }}
-        >
-          <Image
-            testID="picture_id"
-            source={{ uri: picture }}
-            resizeMode="contain"
-            style={{
-              width: 100,
-              height: 100,
-            }}
-          />
-          {name && (
-            <ThemedText testID="name_id" style={{ fontWeight: "bold" }}>
-              {name}
-            </ThemedText>
-          )}
-        </ThemedView>
+        <Wrapper>
+          <Picture testID="picture_id" source={{ uri: picture }} />
+          {name && <Name testID="name_id">{name}</Name>}
+        </Wrapper>
       )}
     </>
   );
