@@ -8,43 +8,19 @@ describe("PokemonList: Card", () => {
 
   test("should show pokemon name with success", () => {
     const name = getNameFake();
-    render(
-      <Card
-        name={name}
-        picture={picture}
-        onPress={function (name: string): void {
-          throw new Error("Function not implemented.");
-        }}
-      />,
-    );
+    makeSut({ name: name, picture: picture });
 
     expect(screen.getByText(name)).toBeTruthy();
   });
 
   test.each(["", undefined, null])("should not show pokemon name", (name) => {
-    render(
-      <Card
-        name={name!}
-        picture={picture}
-        onPress={function (name: string): void {
-          throw new Error("Function not implemented.");
-        }}
-      />,
-    );
+    makeSut({ name: name!, picture: picture });
 
     expect(screen.queryByTestId("name_id")).not.toBeTruthy();
   });
 
   test("should show pokemon picture with success", () => {
-    render(
-      <Card
-        name=""
-        picture={picture}
-        onPress={function (name: string): void {
-          throw new Error("Function not implemented.");
-        }}
-      />,
-    );
+    makeSut({ picture: picture });
 
     expect(screen.getByTestId("picture_id").props.source.uri).toEqual(picture);
   });
@@ -52,15 +28,7 @@ describe("PokemonList: Card", () => {
   test.each([null, undefined, ""])(
     "should show pokemon picture and name if picture is not defined",
     (picture) => {
-      render(
-        <Card
-          name=""
-          picture={picture!}
-          onPress={function (name: string): void {
-            throw new Error("Function not implemented.");
-          }}
-        />,
-      );
+      makeSut({ picture: picture! });
 
       expect(screen.queryByTestId("picture_id")).not.toBeTruthy();
       expect(screen.queryByTestId("name_id")).not.toBeTruthy();
@@ -70,7 +38,7 @@ describe("PokemonList: Card", () => {
   test("should call onPress function correctly", () => {
     const name = getNameFake();
     const onPress = jest.fn();
-    render(<Card name={name} picture={picture!} onPress={onPress} />);
+    makeSut({ onPress, name, picture });
 
     fireEvent.press(screen.getByTestId("card_button_id"));
 
@@ -78,3 +46,13 @@ describe("PokemonList: Card", () => {
     expect(onPress).toHaveBeenCalledWith(name);
   });
 });
+
+type SutProps = {
+  name?: string;
+  picture?: string;
+  onPress?: () => void;
+};
+
+const makeSut = ({ name = "", picture = "", onPress = () => {} }: SutProps) => {
+  return render(<Card name={name} picture={picture} onPress={onPress} />);
+};
