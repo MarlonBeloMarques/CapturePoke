@@ -1,9 +1,5 @@
+import { PokemonList } from "./domain/PokemonList";
 import PokemonListViewModel from "./PokemonListViewModel";
-
-export interface PokemonList {
-  get: () => any[];
-  finding: () => boolean;
-}
 
 type Props = {
   pokemonList: PokemonList;
