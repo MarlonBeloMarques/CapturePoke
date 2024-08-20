@@ -7,15 +7,20 @@ import {
 } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react-native";
 
-const queryClient = new QueryClient();
-const wrapper = ({ children }: { children: any }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-);
-
 jest.useFakeTimers();
+
+const makeWrapper = () => {
+  const queryClient = new QueryClient();
+  const wrapper = ({ children }: { children: any }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+
+  return wrapper;
+};
 
 describe("pokemonList: useRemotePokemonList", () => {
   test("should get the pokemon list with correct url", () => {
+    const wrapper = makeWrapper();
     const queryFnSpy = jest
       .fn()
       .mockReturnValue({ count: 0, next: "", previous: "", results: [] });
@@ -34,6 +39,7 @@ describe("pokemonList: useRemotePokemonList", () => {
   });
 
   test("should get the pokemon list with success", async () => {
+    const wrapper = makeWrapper();
     const list = [
       {
         name: "bulbasaur",
@@ -63,6 +69,27 @@ describe("pokemonList: useRemotePokemonList", () => {
             "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
         },
       ]);
+    });
+  });
+
+  test("should get empty pokemon list", async () => {
+    const wrapper = makeWrapper();
+    const queryFnSpy = async () => {
+      throw new Error("ocorreu um erro.");
+    };
+
+    const url = faker.internet.url();
+    const { get } = useRemotePokemonList({
+      url: url,
+      urlPicture:
+        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon",
+      queryFn: queryFnSpy,
+    });
+
+    const { result } = renderHook(() => get(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current).toEqual([]);
     });
   });
 });
