@@ -1,25 +1,41 @@
-import useRemotePokemonList from "@/src/pokemonList/data/useRemotePokemonList";
+import useRemotePokemonList, {
+  Response,
+} from "@/src/pokemonList/data/useRemotePokemonList";
 import { faker } from "@faker-js/faker";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { renderHook, waitFor } from "@testing-library/react-native";
+import { useQuery } from "@tanstack/react-query";
 
-jest.useFakeTimers();
+jest.mock("@tanstack/react-query", () => ({
+  useQuery: jest.fn(),
+}));
 
-const makeWrapper = () => {
-  const queryClient = new QueryClient();
-  const wrapper = ({ children }: { children: any }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
-
-  return wrapper;
+const useQueryMock = (data: Response, isFetching = false) => {
+  return (useQuery as jest.Mock).mockImplementation(({ queryFn }) => {
+    queryFn();
+    return {
+      data,
+      isSuccess: true,
+      isFetching,
+    };
+  });
 };
 
 describe("pokemonList: useRemotePokemonList", () => {
+  const data: Response = { count: 0, next: "", previous: "", results: [] };
+  const list = [
+    {
+      name: "bulbasaur",
+      url: "http://test.comhttps://pokeapi.co/api/v2/pokemon/1/",
+    },
+  ];
+
   test("should get the pokemon list with correct url", () => {
-    const wrapper = makeWrapper();
-    const queryFnSpy = jest
-      .fn()
-      .mockReturnValue({ count: 0, next: "", previous: "", results: [] });
+    useQueryMock(data);
+    const queryFnSpy = jest.fn((url: string) =>
+      Promise.resolve({
+        json: jest.fn().mockResolvedValue(data),
+      }),
+    );
+
     const url = faker.internet.url();
 
     const { get } = useRemotePokemonList({
@@ -28,20 +44,15 @@ describe("pokemonList: useRemotePokemonList", () => {
       queryFn: queryFnSpy,
     });
 
-    renderHook(() => get(), { wrapper });
+    get();
 
     expect(queryFnSpy).toHaveBeenCalledTimes(1);
     expect(queryFnSpy).toHaveBeenCalledWith(url);
   });
 
-  test("should get the pokemon list with success", async () => {
-    const wrapper = makeWrapper();
-    const list = [
-      {
-        name: "bulbasaur",
-        url: "http://test.comhttps://pokeapi.co/api/v2/pokemon/1/",
-      },
-    ];
+  test("should get the pokemon list with success", () => {
+    const data = { count: 0, next: "", previous: "", results: list };
+    useQueryMock(data);
     const queryFn = (url: string) =>
       Promise.resolve({
         json: jest.fn().mockResolvedValue({
@@ -60,25 +71,24 @@ describe("pokemonList: useRemotePokemonList", () => {
       queryFn: queryFn as unknown as (url: string) => Promise<any>,
     });
 
-    const { result } = renderHook(() => get(), { wrapper });
+    const pokemonList = get();
 
-    await waitFor(() => {
-      expect(result.current).toEqual([
-        {
-          id: 1,
-          name: "bulbasaur",
-          picture:
-            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
-        },
-      ]);
-    });
+    expect(pokemonList).toEqual([
+      {
+        id: 1,
+        name: "bulbasaur",
+        picture:
+          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
+      },
+    ]);
   });
 
-  test("should get empty pokemon list", async () => {
-    const wrapper = makeWrapper();
-    const queryFnSpy = async () => {
-      throw new Error("ocorreu um erro.");
-    };
+  test("should get empty pokemon list if isSuccess is false", () => {
+    useQueryMock(data);
+    const queryFnSpy = (url: string) =>
+      Promise.resolve({
+        json: jest.fn().mockResolvedValue(data),
+      });
 
     const url = faker.internet.url();
     const { get } = useRemotePokemonList({
@@ -88,24 +98,17 @@ describe("pokemonList: useRemotePokemonList", () => {
       queryFn: queryFnSpy,
     });
 
-    const { result } = renderHook(() => get(), { wrapper });
+    const pokemonList = get();
 
-    await waitFor(() => {
-      expect(result.current).toEqual([]);
-    });
+    expect(pokemonList).toEqual([]);
   });
 
-  test("should finding return true when get is being called", async () => {
-    const wrapper = makeWrapper();
-    const list = [
-      {
-        name: "bulbasaur",
-        url: "http://test.comhttps://pokeapi.co/api/v2/pokemon/1/",
-      },
-    ];
-    const queryFnSpy = async () => {
-      return { count: 0, next: "", previous: "", results: list };
-    };
+  test("should finding return true when isFetching is true", () => {
+    useQueryMock(data, true);
+    const queryFnSpy = (url: string) =>
+      Promise.resolve({
+        json: jest.fn().mockResolvedValue(data),
+      });
 
     const url = faker.internet.url();
     const { get, finding } = useRemotePokemonList({
@@ -115,12 +118,28 @@ describe("pokemonList: useRemotePokemonList", () => {
       queryFn: queryFnSpy,
     });
 
-    renderHook(() => get(), { wrapper });
+    get();
 
-    const { result } = renderHook(() => finding(), { wrapper });
+    expect(finding()).toEqual(true);
+  });
 
-    await waitFor(() => {
-      expect(result.current).toEqual(true);
+  test("should finding return false when isFetching is false", () => {
+    useQueryMock(data);
+    const queryFnSpy = (url: string) =>
+      Promise.resolve({
+        json: jest.fn().mockResolvedValue(data),
+      });
+
+    const url = faker.internet.url();
+    const { get, finding } = useRemotePokemonList({
+      url: url,
+      urlPicture:
+        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon",
+      queryFn: queryFnSpy,
     });
+
+    get();
+
+    expect(finding()).toEqual(false);
   });
 });

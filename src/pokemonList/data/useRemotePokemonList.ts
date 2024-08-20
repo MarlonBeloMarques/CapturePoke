@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import PokemonList from "../domain/PokemonList";
 
-type Response = {
+export type Response = {
   count: number;
   next: string;
   previous: string;
