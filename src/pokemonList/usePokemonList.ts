@@ -1,4 +1,4 @@
-import { PokemonList } from "./domain/PokemonList";
+import PokemonList, { Pokemon } from "./domain/PokemonList";
 import PokemonListViewModel from "./PokemonListViewModel";
 
 type Props = {
@@ -6,17 +6,11 @@ type Props = {
   seePokemonDetails: (id: number) => void;
 };
 
-type PokemonDetail = {
-  name: string;
-  picture: string;
-  id: number;
-};
-
 const usePokemonList = ({
   pokemonList,
   seePokemonDetails,
 }: Props): PokemonListViewModel => {
-  const list: PokemonDetail[] = pokemonList.get() || [];
+  const list: Pokemon[] = pokemonList.get() || [];
 
   const getErrorMessage = () => {
     if (list.length === 0) {

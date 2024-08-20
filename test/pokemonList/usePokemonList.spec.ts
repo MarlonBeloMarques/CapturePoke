@@ -2,7 +2,7 @@ import { renderHook } from "@testing-library/react-native";
 import getPokemonListFake from "../doubles/fakers/getPokemonListFake";
 import { Pokemon } from "@/src/pokemonList/PokemonListViewModel";
 import usePokemonList from "@/src/pokemonList/usePokemonList";
-import { PokemonList } from "@/src/pokemonList/domain/PokemonList";
+import PokemonList from "@/src/pokemonList/domain/PokemonList";
 
 const formatName = (name: string) =>
   name.charAt(0).toUpperCase() + name.slice(1);
