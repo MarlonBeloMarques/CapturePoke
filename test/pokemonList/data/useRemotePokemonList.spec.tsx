@@ -92,6 +92,35 @@ describe("pokemonList: useRemotePokemonList", () => {
       expect(result.current).toEqual([]);
     });
   });
+
+  test("should finding return true when get is being called", async () => {
+    const wrapper = makeWrapper();
+    const list = [
+      {
+        name: "bulbasaur",
+        url: "http://test.comhttps://pokeapi.co/api/v2/pokemon/1/",
+      },
+    ];
+    const queryFnSpy = async () => {
+      return { count: 0, next: "", previous: "", results: list };
+    };
+
+    const url = faker.internet.url();
+    const { get, finding } = useRemotePokemonList({
+      url: url,
+      urlPicture:
+        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon",
+      queryFn: queryFnSpy,
+    });
+
+    renderHook(() => get(), { wrapper });
+
+    const { result } = renderHook(() => finding(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current).toEqual(true);
+    });
+  });
 });
 
 type Response = {
@@ -110,11 +139,15 @@ const useRemotePokemonList = ({
   urlPicture: string;
   queryFn: (url: string) => Promise<any>;
 }): PokemonList => {
+  let isFetchingState = false;
+
   const useGet = () => {
-    const { data, isSuccess } = useQuery({
+    const { data, isSuccess, isFetching } = useQuery({
       queryKey: ["remotePokemonList"],
       queryFn: () => queryFn(url),
     });
+
+    isFetchingState = isFetching;
 
     if (isSuccess) {
       const list = (data as Response).results;
@@ -137,8 +170,10 @@ const useRemotePokemonList = ({
     return 0;
   };
 
+  const finding = () => isFetchingState;
+
   return {
     get: useGet,
-    finding: () => false,
+    finding,
   };
 };
