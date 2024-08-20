@@ -1,10 +1,6 @@
-import PokemonList from "@/src/pokemonList/domain/PokemonList";
+import useRemotePokemonList from "@/src/pokemonList/data/useRemotePokemonList";
 import { faker } from "@faker-js/faker";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react-native";
 
 jest.useFakeTimers();
@@ -46,16 +42,22 @@ describe("pokemonList: useRemotePokemonList", () => {
         url: "http://test.comhttps://pokeapi.co/api/v2/pokemon/1/",
       },
     ];
-    const queryFnSpy = async () => {
-      return { count: 0, next: "", previous: "", results: list };
-    };
+    const queryFn = (url: string) =>
+      Promise.resolve({
+        json: jest.fn().mockResolvedValue({
+          count: 0,
+          next: "",
+          previous: "",
+          results: list,
+        }),
+      });
 
     const url = faker.internet.url();
     const { get } = useRemotePokemonList({
       url: url,
       urlPicture:
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon",
-      queryFn: queryFnSpy,
+      queryFn: queryFn as unknown as (url: string) => Promise<any>,
     });
 
     const { result } = renderHook(() => get(), { wrapper });
@@ -122,58 +124,3 @@ describe("pokemonList: useRemotePokemonList", () => {
     });
   });
 });
-
-type Response = {
-  count: number;
-  next: string;
-  previous: string;
-  results: { name: string; url: string }[];
-};
-
-const useRemotePokemonList = ({
-  url,
-  urlPicture,
-  queryFn,
-}: {
-  url: string;
-  urlPicture: string;
-  queryFn: (url: string) => Promise<any>;
-}): PokemonList => {
-  let isFetchingState = false;
-
-  const useGet = () => {
-    const { data, isSuccess, isFetching } = useQuery({
-      queryKey: ["remotePokemonList"],
-      queryFn: () => queryFn(url),
-    });
-
-    isFetchingState = isFetching;
-
-    if (isSuccess) {
-      const list = (data as Response).results;
-      return list.map((pokemon) => ({
-        id: getId(pokemon.url),
-        name: pokemon.name,
-        picture: urlPicture + `/${getId(pokemon.url)}.png`,
-      }));
-    }
-
-    return [];
-  };
-
-  const getId = (url: string) => {
-    if (url) {
-      const urlArr = url.split("pokemon/");
-      return Number(urlArr[1].replace("/", ""));
-    }
-
-    return 0;
-  };
-
-  const finding = () => isFetchingState;
-
-  return {
-    get: useGet,
-    finding,
-  };
-};
