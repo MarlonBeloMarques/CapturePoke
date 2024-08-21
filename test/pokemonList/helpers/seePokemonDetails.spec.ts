@@ -1,5 +1,10 @@
 import { useNavigation } from "expo-router";
+import { Alert } from "react-native";
 import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
 jest.mock("expo-router", () => ({
   useNavigation: jest.fn().mockReturnValue({
@@ -19,6 +24,18 @@ describe("pokemonList: useSeePokemonDetails", () => {
       id: id,
     });
   });
+
+  test("should only call the alert function if the id parameter is undefined", () => {
+    const alertSpy = jest.spyOn(Alert, "alert");
+
+    const navigation = useNavigation as jest.Mock;
+
+    const id = undefined;
+    useSeePokemonDetails(id as unknown as number);
+
+    expect(navigation().navigate).not.toHaveBeenCalled();
+    expect(alertSpy).toHaveBeenCalledTimes(1);
+  });
 });
 
 export type RootStackParamList = {
@@ -29,5 +46,11 @@ const useSeePokemonDetails = (id: number) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  navigation.navigate("pokemonDetails", { id: id });
+  if (id) {
+    navigation.navigate("pokemonDetails", { id: id });
+  }
+
+  if (!id) {
+    Alert.alert("Ocorreu um erro ao visualizar os detalhes.");
+  }
 };
