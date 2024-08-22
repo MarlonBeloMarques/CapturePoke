@@ -7,7 +7,18 @@ import { Image } from "react-native";
 describe("PokemonDetails: ", () => {
   test("should show pokemon name with success", () => {
     const name = getNameFake();
-    render(<PokemonDetails name={name} picture="" abilities={[]} types={[]} />);
+    render(
+      <PokemonDetails
+        name={name}
+        picture=""
+        abilities={[]}
+        types={[]}
+        specie={{
+          name: "",
+          species: [],
+        }}
+      />,
+    );
 
     expect(screen.getByText(name)).toBeTruthy();
   });
@@ -15,7 +26,16 @@ describe("PokemonDetails: ", () => {
   test("should not show pokemon name if its undefined", () => {
     const name = undefined;
     render(
-      <PokemonDetails name={name!} picture="" abilities={[]} types={[]} />,
+      <PokemonDetails
+        name={name!}
+        picture=""
+        abilities={[]}
+        types={[]}
+        specie={{
+          name: "",
+          species: [],
+        }}
+      />,
     );
 
     expect(screen.queryByTestId("pokemon_name_id")).not.toBeTruthy();
@@ -24,7 +44,16 @@ describe("PokemonDetails: ", () => {
   test("should show pokemon picture with success", () => {
     const picture = getPictureFake();
     render(
-      <PokemonDetails name={""} picture={picture} abilities={[]} types={[]} />,
+      <PokemonDetails
+        name={""}
+        picture={picture}
+        abilities={[]}
+        types={[]}
+        specie={{
+          name: "",
+          species: [],
+        }}
+      />,
     );
 
     expect(screen.getByTestId("pokemon_picture_id").props.source.uri).toEqual(
@@ -35,7 +64,16 @@ describe("PokemonDetails: ", () => {
   test("should not show pokemon picture if its undefined", () => {
     const picture = undefined;
     render(
-      <PokemonDetails name={""} picture={picture!} abilities={[]} types={[]} />,
+      <PokemonDetails
+        name={""}
+        picture={picture!}
+        abilities={[]}
+        types={[]}
+        specie={{
+          name: "",
+          species: [],
+        }}
+      />,
     );
 
     expect(screen.queryByTestId("pokemon_picture_id")).not.toBeTruthy();
@@ -49,6 +87,10 @@ describe("PokemonDetails: ", () => {
         picture={""}
         abilities={abilities}
         types={[]}
+        specie={{
+          name: "",
+          species: [],
+        }}
       />,
     );
 
@@ -67,6 +109,10 @@ describe("PokemonDetails: ", () => {
           picture={""}
           abilities={abilities!}
           types={[]}
+          specie={{
+            name: "",
+            species: [],
+          }}
         />,
       );
 
@@ -77,7 +123,16 @@ describe("PokemonDetails: ", () => {
   test("should show the pokemon types correctly", () => {
     const types = ["grass", "poison"];
     render(
-      <PokemonDetails name={""} picture={""} abilities={[]} types={types} />,
+      <PokemonDetails
+        name={""}
+        picture={""}
+        abilities={[]}
+        types={types}
+        specie={{
+          name: "",
+          species: [],
+        }}
+      />,
     );
 
     expect(screen.getByText("Types")).toBeTruthy();
@@ -90,10 +145,54 @@ describe("PokemonDetails: ", () => {
     "should not show the pokemon types if types are empty",
     (types) => {
       render(
-        <PokemonDetails name={""} picture={""} abilities={[]} types={types!} />,
+        <PokemonDetails
+          name={""}
+          picture={""}
+          abilities={[]}
+          types={types!}
+          specie={{
+            name: "",
+            species: [],
+          }}
+        />,
       );
 
       expect(screen.queryByText("Abilities")).not.toBeTruthy();
+    },
+  );
+
+  test("should show the pokemon species correctly", () => {
+    const specie = { name: "monster", species: ["bulbasaur", "ivysaur"] };
+    render(
+      <PokemonDetails
+        name={""}
+        picture={""}
+        abilities={[]}
+        types={[]}
+        specie={specie}
+      />,
+    );
+
+    expect(screen.getByText(specie.name)).toBeTruthy();
+    specie.species.forEach((specie) => {
+      expect(screen.getByText(specie)).toBeTruthy();
+    });
+  });
+
+  test.each([null, { name: "", species: [] }])(
+    "should not show the pokemon species if types are empty",
+    (specie) => {
+      render(
+        <PokemonDetails
+          name={""}
+          picture={""}
+          abilities={[]}
+          specie={specie!}
+          types={[]}
+        />,
+      );
+
+      expect(screen.queryByTestId("pokemon_specie_id")).not.toBeTruthy();
     },
   );
 });
@@ -103,6 +202,7 @@ type PokemonDetailsViewModel = {
   picture: string;
   abilities: string[];
   types: string[];
+  specie: { name: string; species: string[] };
 };
 
 const PokemonDetails = ({
@@ -110,6 +210,7 @@ const PokemonDetails = ({
   picture,
   abilities,
   types,
+  specie,
 }: PokemonDetailsViewModel) => {
   return (
     <>
@@ -125,6 +226,14 @@ const PokemonDetails = ({
       {types && types.length > 0 && <ThemedText>Types</ThemedText>}
       {types &&
         types.map((type, index) => <ThemedText key={index}>{type}</ThemedText>)}
+      {specie && specie.name && (
+        <ThemedText testID="pokemon_specie_id">{specie.name}</ThemedText>
+      )}
+      {specie &&
+        specie.species &&
+        specie.species.map((specie, index) => (
+          <ThemedText key={index}>{specie}</ThemedText>
+        ))}
     </>
   );
 };
