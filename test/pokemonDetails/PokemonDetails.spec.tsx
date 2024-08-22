@@ -76,7 +76,7 @@ describe("PokemonDetails: ", () => {
     const specie = { name: "monster", species: ["bulbasaur", "ivysaur"] };
     makeSut({ specie });
 
-    expect(screen.getByText(specie.name)).toBeTruthy();
+    expect(screen.getByText(`${specie.name} species`)).toBeTruthy();
     specie.species.forEach((specie) => {
       expect(screen.getByText(specie)).toBeTruthy();
     });

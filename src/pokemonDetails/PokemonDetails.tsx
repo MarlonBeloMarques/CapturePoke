@@ -1,5 +1,13 @@
-import { Image } from "react-native";
 import { ThemedText } from "../global/components/ThemedText";
+import {
+  HorizontalScroll,
+  Name,
+  Picture,
+  PictureWrapper,
+  PokemonName,
+  Title,
+  Wrapper,
+} from "./styles";
 
 type PokemonDetailsViewModel = {
   name: string;
@@ -17,28 +25,41 @@ const PokemonDetails = ({
   specie,
 }: PokemonDetailsViewModel) => {
   return (
-    <>
-      {name && <ThemedText testID="pokemon_name_id">{name}</ThemedText>}
+    <Wrapper>
+      {name && <PokemonName testID="pokemon_name_id">{name}</PokemonName>}
       {picture && (
-        <Image testID="pokemon_picture_id" source={{ uri: picture }} />
+        <PictureWrapper>
+          <Picture testID="pokemon_picture_id" source={{ uri: picture }} />
+        </PictureWrapper>
       )}
-      {abilities && abilities.length > 0 && <ThemedText>Abilities</ThemedText>}
-      {abilities &&
-        abilities.map((ability, index) => (
-          <ThemedText key={index}>{ability}</ThemedText>
-        ))}
-      {types && types.length > 0 && <ThemedText>Types</ThemedText>}
-      {types &&
-        types.map((type, index) => <ThemedText key={index}>{type}</ThemedText>)}
+      {abilities && abilities.length > 0 && <Title>Abilities</Title>}
+      {abilities && (
+        <HorizontalScroll>
+          {abilities.map((ability, index) => (
+            <Name key={index}>{ability}</Name>
+          ))}
+        </HorizontalScroll>
+      )}
+      {types && types.length > 0 && <Title>Types</Title>}
+      {types && (
+        <HorizontalScroll>
+          {types.map((type, index) => (
+            <Name key={index}>{type}</Name>
+          ))}
+        </HorizontalScroll>
+      )}
+
       {specie && specie.name && (
-        <ThemedText testID="pokemon_specie_id">{specie.name}</ThemedText>
+        <Title testID="pokemon_specie_id">{`${specie.name} species`}</Title>
       )}
-      {specie &&
-        specie.species &&
-        specie.species.map((specie, index) => (
-          <ThemedText key={index}>{specie}</ThemedText>
-        ))}
-    </>
+      {specie && specie.species && (
+        <HorizontalScroll>
+          {specie.species.map((specie, index) => (
+            <Name key={index}>{specie}</Name>
+          ))}
+        </HorizontalScroll>
+      )}
+    </Wrapper>
   );
 };
 
