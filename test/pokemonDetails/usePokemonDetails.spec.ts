@@ -52,7 +52,7 @@ const formatName = (name: string) =>
 describe("PokemonDetails: usePokemonDetails", () => {
   test("should get the pokemonDetails correctly", () => {
     const pokemonDetails = new PokemonDetailsFake();
-    const { result } = renderHook(() => usePokemonDetails({ pokemonDetails }));
+    const { result } = renderHook(() => usePokemonDetails(pokemonDetails));
 
     expect(result.current.name).toEqual(
       formatName(pokemonDetails.pokemonDetails.name),
@@ -76,9 +76,7 @@ describe("PokemonDetails: usePokemonDetails", () => {
     "should get the pokemonDetails empty",
     (details) => {
       const pokemonDetails = new PokemonDetailsFake(details!);
-      const { result } = renderHook(() =>
-        usePokemonDetails({ pokemonDetails: pokemonDetails }),
-      );
+      const { result } = renderHook(() => usePokemonDetails(pokemonDetails));
 
       expect(result.current.name).toEqual("");
       expect(result.current.abilities).toEqual([]);
@@ -88,15 +86,30 @@ describe("PokemonDetails: usePokemonDetails", () => {
       expect(result.current.specie.species).toEqual([]);
     },
   );
+
+  test.each([pokemonDetailsEmpty, null])(
+    "should get the errorMessage when pokemonDetails is empty",
+    (details) => {
+      const pokemonDetails = new PokemonDetailsFake(details!);
+      const { result } = renderHook(() => usePokemonDetails(pokemonDetails));
+
+      expect(result.current.errorMessage).toEqual(
+        "Parece que não encontramos os detalhes do pokemon.",
+      );
+    },
+  );
+
+  test("should get empty errorMessage when pokemonDetails is not empty", () => {
+    const pokemonDetails = new PokemonDetailsFake();
+    const { result } = renderHook(() => usePokemonDetails(pokemonDetails));
+
+    expect(result.current.errorMessage).toEqual("");
+  });
 });
 
-type Props = {
-  pokemonDetails: PokemonDetails;
-};
-
-const usePokemonDetails = ({
-  pokemonDetails,
-}: Props): PokemonDetailsViewModel => {
+const usePokemonDetails = (
+  pokemonDetails: PokemonDetails,
+): PokemonDetailsViewModel => {
   const details = pokemonDetails.get();
 
   const getName = () => {
@@ -113,13 +126,21 @@ const usePokemonDetails = ({
     return "";
   };
 
+  const getErrorMessage = () => {
+    if (!details || details === pokemonDetailsEmpty) {
+      return "Parece que não encontramos os detalhes do pokemon.";
+    }
+
+    return "";
+  };
+
   return {
     abilities: details?.abilities || [],
     specie: {
       name: getSpecieName() || "",
       species: details?.specie.species || [],
     },
-    errorMessage: "",
+    errorMessage: getErrorMessage(),
     findingPokemonDetails: false,
     name: getName() || "",
     picture: details?.picture || "",
