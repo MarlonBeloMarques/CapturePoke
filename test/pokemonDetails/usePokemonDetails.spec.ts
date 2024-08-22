@@ -17,19 +17,21 @@ const pokemonDetailsEmpty: Details = {
   types: [],
 };
 
+const details = {
+  name: "bulbasaur",
+  picture:
+    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
+  abilities: ["overgrow", "chlorophyll"],
+  types: ["grass", "poison"],
+  specie: {
+    name: "monster",
+    species: ["bulbasaur", "ivysaur"],
+  },
+};
+
 class PokemonDetailsFake implements PokemonDetails {
   constructor(
-    readonly pokemonDetails: Details = {
-      name: "bulbasaur",
-      picture:
-        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
-      abilities: ["overgrow", "chlorophyll"],
-      types: ["grass", "poison"],
-      specie: {
-        name: "monster",
-        species: ["bulbasaur", "ivysaur"],
-      },
-    },
+    readonly pokemonDetails: Details = details,
     readonly isFinding: boolean = true,
   ) {}
   get = (): any => {
@@ -105,6 +107,20 @@ describe("PokemonDetails: usePokemonDetails", () => {
 
     expect(result.current.errorMessage).toEqual("");
   });
+
+  test("should get the findingPokemonDetails equals true when its getting the pokemonDetails", () => {
+    const pokemonDetails = new PokemonDetailsFake(details, true);
+    const { result } = renderHook(() => usePokemonDetails(pokemonDetails));
+
+    expect(result.current.findingPokemonDetails).toEqual(true);
+  });
+
+  test("should get the findingPokemonDetails equals false when it is finished of the get the pokemonDetails", () => {
+    const pokemonDetails = new PokemonDetailsFake(details, false);
+    const { result } = renderHook(() => usePokemonDetails(pokemonDetails));
+
+    expect(result.current.findingPokemonDetails).toEqual(false);
+  });
 });
 
 const usePokemonDetails = (
@@ -141,7 +157,7 @@ const usePokemonDetails = (
       species: details?.specie.species || [],
     },
     errorMessage: getErrorMessage(),
-    findingPokemonDetails: false,
+    findingPokemonDetails: pokemonDetails.finding(),
     name: getName() || "",
     picture: details?.picture || "",
     types: details?.types || [],
