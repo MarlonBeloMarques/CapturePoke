@@ -9,6 +9,7 @@ import {
   Title,
   Wrapper,
 } from "./styles";
+import { ThemedText } from "../global/components/ThemedText";
 
 type PokemonDetailsViewModel = {
   name: string;
@@ -17,6 +18,7 @@ type PokemonDetailsViewModel = {
   types: string[];
   specie: { name: string; species: string[] };
   findingPokemonDetails: boolean;
+  errorMessage: string;
 };
 
 const PokemonDetails = ({
@@ -26,9 +28,13 @@ const PokemonDetails = ({
   types,
   specie,
   findingPokemonDetails,
+  errorMessage,
 }: PokemonDetailsViewModel) => {
   return (
     <Wrapper>
+      {!findingPokemonDetails && errorMessage && (
+        <ThemedText testID="error_message_id">{errorMessage}</ThemedText>
+      )}
       {findingPokemonDetails && (
         <LoadingWrapper>
           <ActivityIndicator testID="loading_id" size="large" />

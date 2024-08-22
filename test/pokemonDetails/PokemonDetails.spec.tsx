@@ -103,6 +103,23 @@ describe("PokemonDetails: ", () => {
 
     expect(screen.queryByTestId("loading_id")).not.toBeTruthy();
   });
+
+  test("should only show error message if errorMessage is not empty", () => {
+    const errorMessage = "Parece que não encontramos os detalhes do pokemon";
+    makeSut({ errorMessage });
+
+    expect(screen.queryByTestId("pokemon_name_id")).not.toBeTruthy();
+    expect(screen.getByText(errorMessage)).toBeTruthy();
+  });
+
+  test.each([null, undefined, ""])(
+    "should not show error message if errorMessage is empty",
+    (errorMessage) => {
+      makeSut({ errorMessage: errorMessage! });
+
+      expect(screen.queryByTestId("error_message_id")).not.toBeTruthy();
+    },
+  );
 });
 
 type SutProps = {
@@ -112,6 +129,7 @@ type SutProps = {
   types?: string[];
   specie?: { name: string; species: string[] };
   findingPokemonDetails?: boolean;
+  errorMessage?: string;
 };
 
 const makeSut = ({
@@ -121,6 +139,7 @@ const makeSut = ({
   types = [],
   specie = { name: "", species: [] },
   findingPokemonDetails = false,
+  errorMessage = "",
 }: SutProps) => {
   return render(
     <PokemonDetails
@@ -130,6 +149,7 @@ const makeSut = ({
       specie={specie}
       types={types}
       findingPokemonDetails={findingPokemonDetails}
+      errorMessage={errorMessage}
     />,
   );
 };
