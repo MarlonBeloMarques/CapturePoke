@@ -11,7 +11,7 @@ import {
 } from "./styles";
 import { ThemedText } from "../global/components/ThemedText";
 
-type PokemonDetailsViewModel = {
+export type PokemonDetailsViewModel = {
   name: string;
   picture: string;
   abilities: string[];
