@@ -9,6 +9,14 @@ type Details = {
   specie: { name: string; species: string[] };
 };
 
+const pokemonDetailsEmpty: Details = {
+  abilities: [],
+  name: "",
+  picture: "",
+  specie: { name: "", species: [] },
+  types: [],
+};
+
 class PokemonDetailsFake implements PokemonDetails {
   constructor(
     readonly pokemonDetails: Details = {
@@ -63,6 +71,23 @@ describe("PokemonDetails: usePokemonDetails", () => {
       pokemonDetails.pokemonDetails.specie.species,
     );
   });
+
+  test.each([pokemonDetailsEmpty, null])(
+    "should get the pokemonDetails empty",
+    (details) => {
+      const pokemonDetails = new PokemonDetailsFake(details!);
+      const { result } = renderHook(() =>
+        usePokemonDetails({ pokemonDetails: pokemonDetails }),
+      );
+
+      expect(result.current.name).toEqual("");
+      expect(result.current.abilities).toEqual([]);
+      expect(result.current.picture).toEqual("");
+      expect(result.current.types).toEqual([]);
+      expect(result.current.specie.name).toEqual("");
+      expect(result.current.specie.species).toEqual([]);
+    },
+  );
 });
 
 type Props = {
@@ -72,23 +97,32 @@ type Props = {
 const usePokemonDetails = ({
   pokemonDetails,
 }: Props): PokemonDetailsViewModel => {
-  const { name, abilities, picture, specie, types } = pokemonDetails.get();
+  const details = pokemonDetails.get();
 
   const getName = () => {
-    return formatName(name);
+    if (details) {
+      return formatName(details.name || "");
+    }
   };
 
   const getSpecieName = () => {
-    return formatName(specie.name);
+    if (details) {
+      return formatName(details.specie.name || "");
+    }
+
+    return "";
   };
 
   return {
-    abilities,
-    specie: { name: getSpecieName(), species: specie.species },
+    abilities: details?.abilities || [],
+    specie: {
+      name: getSpecieName() || "",
+      species: details?.specie.species || [],
+    },
     errorMessage: "",
     findingPokemonDetails: false,
-    name: getName(),
-    picture,
-    types,
+    name: getName() || "",
+    picture: details?.picture || "",
+    types: details?.types || [],
   };
 };
