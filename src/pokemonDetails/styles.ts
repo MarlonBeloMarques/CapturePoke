@@ -3,8 +3,16 @@ import { ThemedView } from "../global/components/ThemedView";
 import { ThemedText } from "../global/components/ThemedText";
 
 export const Wrapper = styled(ThemedView)`
+  flex: 1;
   margin: 20px;
 `;
+
+export const LoadingWrapper = styled(ThemedView)`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+`;
+
 export const PokemonName = styled(ThemedText)`
   font-weight: bold;
   font-size: 24px;

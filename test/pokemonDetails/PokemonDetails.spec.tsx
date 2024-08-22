@@ -90,6 +90,19 @@ describe("PokemonDetails: ", () => {
       expect(screen.queryByTestId("pokemon_specie_id")).not.toBeTruthy();
     },
   );
+
+  test("should only show the loading animation if findingPokemonDetails is true", () => {
+    makeSut({ findingPokemonDetails: true, name: "bulbasaur" });
+
+    expect(screen.getByTestId("loading_id")).toBeTruthy();
+    expect(screen.queryByTestId("pokemon_name_id")).not.toBeTruthy();
+  });
+
+  test("should not show loading animation if findingPokemonDetails is false", () => {
+    makeSut({ findingPokemonDetails: false });
+
+    expect(screen.queryByTestId("loading_id")).not.toBeTruthy();
+  });
 });
 
 type SutProps = {
@@ -98,6 +111,7 @@ type SutProps = {
   abilities?: string[];
   types?: string[];
   specie?: { name: string; species: string[] };
+  findingPokemonDetails?: boolean;
 };
 
 const makeSut = ({
@@ -106,6 +120,7 @@ const makeSut = ({
   abilities = [],
   types = [],
   specie = { name: "", species: [] },
+  findingPokemonDetails = false,
 }: SutProps) => {
   return render(
     <PokemonDetails
@@ -114,6 +129,7 @@ const makeSut = ({
       abilities={abilities}
       specie={specie}
       types={types}
+      findingPokemonDetails={findingPokemonDetails}
     />,
   );
 };
