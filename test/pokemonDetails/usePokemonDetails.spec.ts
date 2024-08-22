@@ -1,21 +1,11 @@
-import { PokemonDetailsViewModel } from "@/src/pokemonDetails/PokemonDetails";
+import formatName from "@/src/global/helpers/formatName";
+import PokemonDetails, {
+  Details,
+} from "@/src/pokemonDetails/domain/PokemonDetails";
+import usePokemonDetails, {
+  pokemonDetailsEmpty,
+} from "@/src/pokemonDetails/usePokemonDetails";
 import { renderHook } from "@testing-library/react-native";
-
-type Details = {
-  name: string;
-  picture: string;
-  abilities: string[];
-  types: string[];
-  specie: { name: string; species: string[] };
-};
-
-const pokemonDetailsEmpty: Details = {
-  abilities: [],
-  name: "",
-  picture: "",
-  specie: { name: "", species: [] },
-  types: [],
-};
 
 const details = {
   name: "bulbasaur",
@@ -42,14 +32,6 @@ class PokemonDetailsFake implements PokemonDetails {
     return this.isFinding;
   };
 }
-
-interface PokemonDetails {
-  get: () => Details;
-  finding: () => boolean;
-}
-
-const formatName = (name: string) =>
-  name.charAt(0).toUpperCase() + name.slice(1);
 
 describe("PokemonDetails: usePokemonDetails", () => {
   test("should get the pokemonDetails correctly", () => {
@@ -122,44 +104,3 @@ describe("PokemonDetails: usePokemonDetails", () => {
     expect(result.current.findingPokemonDetails).toEqual(false);
   });
 });
-
-const usePokemonDetails = (
-  pokemonDetails: PokemonDetails,
-): PokemonDetailsViewModel => {
-  const details = pokemonDetails.get();
-
-  const getName = () => {
-    if (details) {
-      return formatName(details.name || "");
-    }
-  };
-
-  const getSpecieName = () => {
-    if (details) {
-      return formatName(details.specie.name || "");
-    }
-
-    return "";
-  };
-
-  const getErrorMessage = () => {
-    if (!details || details === pokemonDetailsEmpty) {
-      return "Parece que não encontramos os detalhes do pokemon.";
-    }
-
-    return "";
-  };
-
-  return {
-    abilities: details?.abilities || [],
-    specie: {
-      name: getSpecieName() || "",
-      species: details?.specie.species || [],
-    },
-    errorMessage: getErrorMessage(),
-    findingPokemonDetails: pokemonDetails.finding(),
-    name: getName() || "",
-    picture: details?.picture || "",
-    types: details?.types || [],
-  };
-};

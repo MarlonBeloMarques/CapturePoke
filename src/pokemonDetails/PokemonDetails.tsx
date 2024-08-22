@@ -10,16 +10,7 @@ import {
   Wrapper,
 } from "./styles";
 import { ThemedText } from "../global/components/ThemedText";
-
-export type PokemonDetailsViewModel = {
-  name: string;
-  picture: string;
-  abilities: string[];
-  types: string[];
-  specie: { name: string; species: string[] };
-  findingPokemonDetails: boolean;
-  errorMessage: string;
-};
+import PokemonDetailsViewModel from "./PokemonDetailsViewModel";
 
 const PokemonDetails = ({
   name,
