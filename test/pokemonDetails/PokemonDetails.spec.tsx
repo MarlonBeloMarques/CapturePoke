@@ -7,21 +7,25 @@ import { Image } from "react-native";
 describe("PokemonDetails: ", () => {
   test("should show pokemon name with success", () => {
     const name = getNameFake();
-    render(<PokemonDetails name={name} picture="" abilities={[]} />);
+    render(<PokemonDetails name={name} picture="" abilities={[]} types={[]} />);
 
     expect(screen.getByText(name)).toBeTruthy();
   });
 
   test("should not show pokemon name if its undefined", () => {
     const name = undefined;
-    render(<PokemonDetails name={name!} picture="" abilities={[]} />);
+    render(
+      <PokemonDetails name={name!} picture="" abilities={[]} types={[]} />,
+    );
 
     expect(screen.queryByTestId("pokemon_name_id")).not.toBeTruthy();
   });
 
   test("should show pokemon picture with success", () => {
     const picture = getPictureFake();
-    render(<PokemonDetails name={""} picture={picture} abilities={[]} />);
+    render(
+      <PokemonDetails name={""} picture={picture} abilities={[]} types={[]} />,
+    );
 
     expect(screen.getByTestId("pokemon_picture_id").props.source.uri).toEqual(
       picture,
@@ -30,14 +34,23 @@ describe("PokemonDetails: ", () => {
 
   test("should not show pokemon picture if its undefined", () => {
     const picture = undefined;
-    render(<PokemonDetails name={""} picture={picture!} abilities={[]} />);
+    render(
+      <PokemonDetails name={""} picture={picture!} abilities={[]} types={[]} />,
+    );
 
     expect(screen.queryByTestId("pokemon_picture_id")).not.toBeTruthy();
   });
 
   test("should show the pokemon abilities correctly", () => {
     const abilities = ["overgrow", "chlorophyll"];
-    render(<PokemonDetails name={""} picture={""} abilities={abilities} />);
+    render(
+      <PokemonDetails
+        name={""}
+        picture={""}
+        abilities={abilities}
+        types={[]}
+      />,
+    );
 
     expect(screen.getByText("Abilities")).toBeTruthy();
     abilities.forEach((ability) => {
@@ -48,7 +61,37 @@ describe("PokemonDetails: ", () => {
   test.each([null, []])(
     "should not show the pokemon abilities if abilities are empty",
     (abilities) => {
-      render(<PokemonDetails name={""} picture={""} abilities={abilities!} />);
+      render(
+        <PokemonDetails
+          name={""}
+          picture={""}
+          abilities={abilities!}
+          types={[]}
+        />,
+      );
+
+      expect(screen.queryByText("Abilities")).not.toBeTruthy();
+    },
+  );
+
+  test("should show the pokemon types correctly", () => {
+    const types = ["grass", "poison"];
+    render(
+      <PokemonDetails name={""} picture={""} abilities={[]} types={types} />,
+    );
+
+    expect(screen.getByText("Types")).toBeTruthy();
+    types.forEach((type) => {
+      expect(screen.getByText(type)).toBeTruthy();
+    });
+  });
+
+  test.each([null, []])(
+    "should not show the pokemon types if types are empty",
+    (types) => {
+      render(
+        <PokemonDetails name={""} picture={""} abilities={[]} types={types!} />,
+      );
 
       expect(screen.queryByText("Abilities")).not.toBeTruthy();
     },
@@ -59,12 +102,14 @@ type PokemonDetailsViewModel = {
   name: string;
   picture: string;
   abilities: string[];
+  types: string[];
 };
 
 const PokemonDetails = ({
   name,
   picture,
   abilities,
+  types,
 }: PokemonDetailsViewModel) => {
   return (
     <>
@@ -77,6 +122,9 @@ const PokemonDetails = ({
         abilities.map((ability, index) => (
           <ThemedText key={index}>{ability}</ThemedText>
         ))}
+      {types && types.length > 0 && <ThemedText>Types</ThemedText>}
+      {types &&
+        types.map((type, index) => <ThemedText key={index}>{type}</ThemedText>)}
     </>
   );
 };
