@@ -56,12 +56,11 @@ describe("PokemonList", () => {
     },
   );
 
-  test("should only show the loading animation if findingPokemons is true", () => {
+  test("should show the loading animation if findingPokemons is true", () => {
     const list = getPokemonListFake(1);
     makeSut({ findingPokemons: true, list });
 
     expect(screen.getByTestId("loading_id")).toBeTruthy();
-    expect(screen.queryByTestId("pokemon_list_id")).not.toBeTruthy();
   });
 
   test("should not show loading animation if findingPokemons is false", () => {
@@ -90,6 +89,7 @@ const makeSut = ({
       selectPokemon={selectPokemon}
       errorMessage={errorMessage}
       findingPokemons={findingPokemons}
+      fetchNextList={() => {}}
     />,
   );
 };
