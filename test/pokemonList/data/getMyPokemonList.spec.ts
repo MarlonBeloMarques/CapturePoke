@@ -28,12 +28,29 @@ describe("PokemonList: getMyPokemonList", () => {
     );
     const myPokemonList = await getMyPokemonList();
 
-    expect(myPokemonList).toBeTruthy();
     expect(myPokemonList).toEqual(
       pokemonList.map((pokemon) => ({
         ...pokemon,
         name: formatName(pokemon.name),
       })),
     );
+  });
+
+  test("should get empty myPokemonList when calling the getItem of AsyncStorage with error", async () => {
+    (AsyncStorage.getItem as jest.Mock).mockImplementation(() => {
+      throw new Error("ocorreu um erro");
+    });
+
+    const myPokemonList = await getMyPokemonList();
+
+    expect(myPokemonList).toEqual([]);
+  });
+
+  test("should get empty myPokemonList when calling the getItem of AsyncStorage returning empty", async () => {
+    (AsyncStorage.getItem as jest.Mock).mockReturnValue(Promise.resolve(""));
+
+    const myPokemonList = await getMyPokemonList();
+
+    expect(myPokemonList).toEqual([]);
   });
 });
