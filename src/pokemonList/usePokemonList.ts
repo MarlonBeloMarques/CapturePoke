@@ -1,3 +1,4 @@
+import { useState } from "react";
 import PokemonList, { Pokemon } from "./domain/PokemonList";
 import PokemonListViewModel from "./PokemonListViewModel";
 
@@ -10,7 +11,8 @@ const usePokemonList = ({
   pokemonList,
   seePokemonDetails,
 }: Props): PokemonListViewModel => {
-  const list: Pokemon[] = pokemonList.get() || [];
+  const [page, setPage] = useState(0);
+  const list: Pokemon[] = pokemonList.get(page) || [];
 
   const getErrorMessage = () => {
     if (list.length === 0) {
@@ -29,11 +31,16 @@ const usePokemonList = ({
     }
   };
 
+  const fetchNextList = () => {
+    setPage(page + 1);
+  };
+
   return {
     errorMessage: getErrorMessage(),
     findingPokemons: pokemonList.finding(),
     list,
     selectPokemon,
+    fetchNextList,
   };
 };
 

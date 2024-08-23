@@ -8,6 +8,7 @@ type PokemonListViewModel = {
   errorMessage: string;
   findingPokemons: boolean;
   selectPokemon: (name: string) => void;
+  fetchNextList: () => void;
 };
 
 export default PokemonListViewModel;
