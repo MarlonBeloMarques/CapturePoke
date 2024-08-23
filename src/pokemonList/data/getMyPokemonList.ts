@@ -1,10 +1,11 @@
+import { myPokemonListKey } from "@/src/global/constants/Keys";
 import formatName from "@/src/global/helpers/formatName";
 import { Pokemon } from "@/src/pokemonList/domain/PokemonList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const getMyPokemonList = async (): Promise<Pokemon[]> => {
   try {
-    const item = await AsyncStorage.getItem("my-pokemon-list");
+    const item = await AsyncStorage.getItem(myPokemonListKey);
     if (item) {
       const itemParsed = JSON.parse(item);
 

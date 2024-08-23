@@ -4,15 +4,15 @@ import usePokemonDetails from "./usePokemonDetails";
 import useRemotePokemonDetails from "./data/useRemotePokemonDetails";
 import { useLocalSearchParams } from "expo-router";
 import saveInMyPokemonList from "./data/saveInMyPokemonList";
+import Url from "../global/constants/Urls";
 
 const PokemonDetailsFactory = () => {
-  const params = useLocalSearchParams();
+  const { id } = useLocalSearchParams();
   const pokemonDetails = useRemotePokemonDetails({
-    url: `https://pokeapi.co/api/v2/pokemon/${params.id}`,
+    url: Url.baseUrlWithParamId(id as unknown as number),
     queryFn: fetch,
-    urlPicture:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon",
-    urlSpecies: "https://pokeapi.co/api/v2/egg-group/",
+    urlPicture: Url.urlPicture,
+    urlSpecies: Url.urlSpecies,
   });
 
   return (

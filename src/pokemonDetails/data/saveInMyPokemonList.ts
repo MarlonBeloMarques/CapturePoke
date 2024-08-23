@@ -1,3 +1,4 @@
+import { myPokemonListKey } from "@/src/global/constants/Keys";
 import getMyPokemonList from "@/src/pokemonList/data/getMyPokemonList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -18,7 +19,7 @@ const saveInMyPokemonList = async (
 
   try {
     list.push({ name: name.toLowerCase(), picture });
-    await AsyncStorage.setItem("my-pokemon-list", JSON.stringify(list));
+    await AsyncStorage.setItem(myPokemonListKey, JSON.stringify(list));
     return true;
   } catch (_) {
     return false;
