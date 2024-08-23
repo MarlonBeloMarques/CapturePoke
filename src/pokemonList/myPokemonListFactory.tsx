@@ -12,6 +12,7 @@ const MyPokemonListFactory = () => {
   const pokemonList: PokemonList = {
     get,
     finding,
+    fetchNextList: () => {},
   };
 
   return (
