@@ -20,4 +20,14 @@ describe("PokemonDetails: saveInMyPokemonList", () => {
     );
     expect(saved).toBe(true);
   });
+
+  test("should try call setItem of AsyncStorage without success", async () => {
+    (AsyncStorage.setItem as jest.Mock).mockImplementation(() => {
+      throw new Error("ocorreu um erro");
+    });
+    const picture = getPictureFake();
+    const saved = await saveInMyPokemonList("Bulbasaur", picture);
+
+    expect(saved).toBe(false);
+  });
 });

@@ -6,9 +6,13 @@ const saveInMyPokemonList = async (
 ): Promise<boolean> => {
   const list: { name: string; picture: string }[] = [];
 
-  list.push({ name: name.toLowerCase(), picture });
-  await AsyncStorage.setItem("my-pokemon-list", JSON.stringify(list));
-  return true;
+  try {
+    list.push({ name: name.toLowerCase(), picture });
+    await AsyncStorage.setItem("my-pokemon-list", JSON.stringify(list));
+    return true;
+  } catch (_) {
+    return false;
+  }
 };
 
 export default saveInMyPokemonList;
