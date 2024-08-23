@@ -6,7 +6,7 @@ export default function PokemonList() {
     <ThemedView
       style={{
         flex: 1,
-        paddingTop: 100,
+        paddingTop: 120,
         justifyContent: "center",
       }}
     >
