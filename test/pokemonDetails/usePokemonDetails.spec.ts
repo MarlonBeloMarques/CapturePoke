@@ -35,6 +35,10 @@ class PokemonDetailsFake implements PokemonDetails {
   };
 }
 
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe("PokemonDetails: usePokemonDetails", () => {
   const saveInMyPokemonList = async () => {
     return false;
@@ -138,5 +142,42 @@ describe("PokemonDetails: usePokemonDetails", () => {
       details.picture,
     );
     expect(alertSpy).toHaveBeenCalledTimes(1);
+  });
+
+  test.each([{ name: "", picture: "" }, null])(
+    "should not call saveInMyPokemonList when calling capturePokemon function if name or picture are undefined",
+    async (params) => {
+      const alertSpy = jest.spyOn(Alert, "alert");
+      const saveInMyPokemonList = jest
+        .fn()
+        .mockReturnValue(Promise.resolve(true));
+      const pokemonDetails = new PokemonDetailsFake(details, false);
+      const { result } = renderHook(() =>
+        usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+      );
+
+      await result.current.capturePokemon(params?.name!, params?.picture!);
+
+      expect(saveInMyPokemonList).not.toHaveBeenCalled();
+      expect(alertSpy).not.toHaveBeenCalled();
+    },
+  );
+
+  test("should call alert with unsuccess when calling saveInMyPokemonList no success", async () => {
+    const alertSpy = jest.spyOn(Alert, "alert");
+    const saveInMyPokemonList = jest
+      .fn()
+      .mockReturnValue(Promise.resolve(false));
+    const pokemonDetails = new PokemonDetailsFake(details, false);
+    const { result } = renderHook(() =>
+      usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+    );
+
+    await result.current.capturePokemon(details.name, details.picture);
+
+    expect(saveInMyPokemonList).toHaveBeenCalled();
+    expect(alertSpy).toHaveBeenCalledWith(
+      "Você não conseguiu capturar o pokemon :(",
+    );
   });
 });

@@ -41,9 +41,15 @@ const usePokemonDetails = (
   };
 
   const capturePokemon = async (name: string, picture: string) => {
-    const saved = await saveInMyPokemonList(name, picture);
-    if (saved) {
-      Alert.alert("O pokemon foi capturado com sucesso.");
+    if (name && picture) {
+      const saved = await saveInMyPokemonList(name, picture);
+      if (saved) {
+        Alert.alert("O pokemon foi capturado com sucesso.");
+      }
+
+      if (!saved) {
+        Alert.alert("Você não conseguiu capturar o pokemon :(");
+      }
     }
   };
 
