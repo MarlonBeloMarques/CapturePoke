@@ -8,12 +8,12 @@ jest.mock("@tanstack/react-query", () => ({
   useQuery: jest.fn(),
 }));
 
-const useQueryMock = (data: Response, isFetching = false) => {
+const useQueryMock = (data: Response, isFetching = false, isSuccess = true) => {
   return (useQuery as jest.Mock).mockImplementation(({ queryFn }) => {
     queryFn();
     return {
       data,
-      isSuccess: true,
+      isSuccess,
       isFetching,
     };
   });
@@ -84,7 +84,8 @@ describe("pokemonList: useRemotePokemonList", () => {
   });
 
   test("should get empty pokemon list if isSuccess is false", () => {
-    useQueryMock(data);
+    const isSuccess = false;
+    useQueryMock(data, true, isSuccess);
     const queryFnSpy = (url: string) =>
       Promise.resolve({
         json: jest.fn().mockResolvedValue(data),
