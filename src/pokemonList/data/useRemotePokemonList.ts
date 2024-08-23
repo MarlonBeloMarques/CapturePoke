@@ -17,10 +17,12 @@ const getOffset = (url: string) => {
 const useRemotePokemonList = ({
   url,
   urlPicture,
+  pokemonSearched = "",
   queryFn,
 }: {
   url: string;
   urlPicture: string;
+  pokemonSearched: string;
   queryFn: (url: string) => Promise<any>;
 }): PokemonList => {
   const queryFnBuilder = async ({ pageParam = 20 }) => {
@@ -69,12 +71,22 @@ const useRemotePokemonList = ({
     return 0;
   };
 
+  const getFilteredPokemonList = () => {
+    const allPokemons = getPokemonList();
+
+    if (pokemonSearched === "") return allPokemons;
+
+    return allPokemons.filter((pokemon) =>
+      pokemon.name.toLowerCase().includes(pokemonSearched.toLowerCase()),
+    );
+  };
+
   const finding = () => isFetching || isFetchingNextPage;
 
   const fetchNextList = hasNextPage ? fetchNextPage : () => {};
 
   return {
-    get: getPokemonList,
+    get: getFilteredPokemonList,
     fetchNextList,
     finding,
   };

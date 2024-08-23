@@ -38,6 +38,14 @@ describe("pokemonList: useRemotePokemonList", () => {
       name: "bulbasaur",
       url: "https://pokeapi.co/api/v2/pokemon/1/",
     },
+    {
+      name: "charmander",
+      url: "https://pokeapi.co/api/v2/pokemon/2/",
+    },
+    {
+      name: "ivysaur",
+      url: "https://pokeapi.co/api/v2/pokemon/3/",
+    },
   ];
   const data: Response = {
     count: 0,
@@ -60,6 +68,7 @@ describe("pokemonList: useRemotePokemonList", () => {
       url,
       urlPicture: "",
       queryFn: queryFnSpy,
+      pokemonSearched: "",
     });
 
     get();
@@ -80,6 +89,7 @@ describe("pokemonList: useRemotePokemonList", () => {
       url,
       urlPicture,
       queryFn: queryFn as unknown as (url: string) => Promise<any>,
+      pokemonSearched: "",
     });
 
     const pokemonList = get();
@@ -89,6 +99,16 @@ describe("pokemonList: useRemotePokemonList", () => {
         id: 1,
         name: "bulbasaur",
         picture: urlPicture + "/1.png",
+      },
+      {
+        id: 2,
+        name: "charmander",
+        picture: urlPicture + "/2.png",
+      },
+      {
+        id: 3,
+        name: "ivysaur",
+        picture: urlPicture + "/3.png",
       },
     ]);
   });
@@ -106,6 +126,7 @@ describe("pokemonList: useRemotePokemonList", () => {
       url,
       urlPicture,
       queryFn: queryFnSpy,
+      pokemonSearched: "",
     });
 
     const pokemonList = get();
@@ -125,6 +146,7 @@ describe("pokemonList: useRemotePokemonList", () => {
       url,
       urlPicture,
       queryFn: queryFnSpy,
+      pokemonSearched: "",
     });
 
     get();
@@ -144,10 +166,37 @@ describe("pokemonList: useRemotePokemonList", () => {
       url,
       urlPicture,
       queryFn: queryFnSpy,
+      pokemonSearched: "",
     });
 
     get();
 
     expect(finding()).toEqual(false);
+  });
+
+  test("should get the pokemon filtered by name with success", () => {
+    useInfiniteQueryMock([data]);
+    const queryFnSpy = (url: string) =>
+      Promise.resolve({
+        json: jest.fn().mockResolvedValue(data),
+      });
+
+    const url = faker.internet.url();
+    const { get } = useRemotePokemonList({
+      url,
+      urlPicture,
+      queryFn: queryFnSpy,
+      pokemonSearched: "charma",
+    });
+
+    const pokemonfiltered = get();
+
+    expect(pokemonfiltered).toEqual([
+      {
+        id: 2,
+        name: "charmander",
+        picture: urlPicture + "/2.png",
+      },
+    ]);
   });
 });
