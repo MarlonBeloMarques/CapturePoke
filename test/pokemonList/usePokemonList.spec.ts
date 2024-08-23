@@ -99,8 +99,8 @@ describe("PokemonList: usePokemonList", () => {
   });
 
   test("should update the pokemonList when calling the fetchNextList function with success", async () => {
-    const list = getPokemonListFake(5);
-    const listFetched = getPokemonListFake(5);
+    const list = getPokemonListFake(22);
+    const listFetched = getPokemonListFake(20);
     const seePokemonDetails = jest.fn();
     const { result, rerender } = makeSut({
       seePokemonDetails,

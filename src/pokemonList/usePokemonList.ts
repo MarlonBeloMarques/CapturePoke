@@ -31,8 +31,10 @@ const usePokemonList = ({
   };
 
   const fetchNextList = useCallback(() => {
-    pokemonList.fetchNextList();
-  }, [pokemonList]);
+    if (list.length >= 20) {
+      pokemonList.fetchNextList();
+    }
+  }, [pokemonList, list]);
 
   const findingPokemons = useMemo(() => pokemonList.finding(), [pokemonList]);
 
