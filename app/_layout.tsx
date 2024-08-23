@@ -9,11 +9,13 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/src/global/hooks/useColorScheme";
-import { ThemedView } from "@/src/global/components/ThemedView";
-import { ThemedText } from "@/src/global/components/ThemedText";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Stack } from "expo-router";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -33,11 +35,12 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <ThemedView
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-      >
-        <ThemedText style={{ fontWeight: "bold" }}>CapturePoke</ThemedText>
-      </ThemedView>
+      <QueryClientProvider client={queryClient}>
+        <Stack>
+          <Stack.Screen name="pokemonList" />
+          <Stack.Screen name="pokemonDetails" />
+        </Stack>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }
