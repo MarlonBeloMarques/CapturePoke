@@ -1,7 +1,7 @@
 const getSpeciesDataStub = () => {
   return {
     name: "monster",
-    pokemon_species: [
+    egg_groups: [
       {
         name: "bulbasaur",
         url: "https://pokeapi.co/api/v2/pokemon-species/1/",

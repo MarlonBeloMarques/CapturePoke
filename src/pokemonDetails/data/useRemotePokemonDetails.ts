@@ -12,7 +12,7 @@ export type Response = {
 
 export type SpeciesResponse = {
   name: string;
-  pokemon_species: { name: string; url: string }[];
+  egg_groups: { name: string; url: string }[];
 };
 
 const useRemotePokemonDetails = ({
@@ -81,7 +81,7 @@ const useRemotePokemonDetails = ({
       const specie = data as SpeciesResponse;
       return {
         name: specie.name,
-        species: specie.pokemon_species.map((specie) => specie.name),
+        species: specie.egg_groups.map((specie) => specie.name),
       };
     }
 
