@@ -8,8 +8,8 @@ const formatName = (name: string) =>
   name.charAt(0).toUpperCase() + name.slice(1);
 
 class PokemonListFake implements PokemonList {
-  page: number = 0;
   pokemonList: Pokemon[] = [];
+  fetchNextListHasBeenCalled = false;
   constructor(
     pokemonList: Pokemon[],
     readonly isFinding: boolean = true,
@@ -17,10 +17,9 @@ class PokemonListFake implements PokemonList {
   ) {
     this.pokemonList = pokemonList;
   }
-  get = (page?: number): any[] => {
-    if (page && this.page < page) {
+  get = (): any[] => {
+    if (this.fetchNextListHasBeenCalled) {
       this.addInPokemonList(this.newPokemonList);
-      this.page = page;
     }
     return this.pokemonList;
   };
@@ -31,6 +30,10 @@ class PokemonListFake implements PokemonList {
 
   finding = () => {
     return this.isFinding;
+  };
+
+  fetchNextList = () => {
+    this.fetchNextListHasBeenCalled = true;
   };
 }
 

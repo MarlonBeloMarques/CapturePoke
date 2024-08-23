@@ -1,5 +1,5 @@
-import { useState } from "react";
-import PokemonList, { Pokemon } from "./domain/PokemonList";
+import { useCallback, useMemo } from "react";
+import PokemonList from "./domain/PokemonList";
 import PokemonListViewModel from "./PokemonListViewModel";
 
 type Props = {
@@ -11,8 +11,7 @@ const usePokemonList = ({
   pokemonList,
   seePokemonDetails,
 }: Props): PokemonListViewModel => {
-  const [page, setPage] = useState(0);
-  const list: Pokemon[] = pokemonList.get(page) || [];
+  const list = pokemonList.get() || [];
 
   const getErrorMessage = () => {
     if (list.length === 0) {
@@ -31,13 +30,15 @@ const usePokemonList = ({
     }
   };
 
-  const fetchNextList = () => {
-    setPage(page + 1);
-  };
+  const fetchNextList = useCallback(() => {
+    pokemonList.fetchNextList();
+  }, [pokemonList]);
+
+  const findingPokemons = useMemo(() => pokemonList.finding(), [pokemonList]);
 
   return {
     errorMessage: getErrorMessage(),
-    findingPokemons: pokemonList.finding(),
+    findingPokemons,
     list,
     selectPokemon,
     fetchNextList,
