@@ -3,16 +3,16 @@ import { Alert } from "react-native";
 import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
 
 export type RootStackParamList = {
-  pokemonDetails: { id: number } | undefined;
+  pokemonDetails: { id: number; isFromPokemonList: boolean } | undefined;
 };
 
-const useSeePokemonDetails = () => {
+const useSeePokemonDetails = (isFromPokemonList = true) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const seePokemonDetails = (id: number) => {
     if (id) {
-      navigation.navigate("pokemonDetails", { id: id });
+      navigation.navigate("pokemonDetails", { id, isFromPokemonList });
     }
 
     if (!id) {

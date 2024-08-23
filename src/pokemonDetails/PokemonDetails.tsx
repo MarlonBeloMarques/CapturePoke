@@ -23,6 +23,7 @@ const PokemonDetails = ({
   findingPokemonDetails,
   errorMessage,
   capturePokemon,
+  isFromPokemonList,
 }: PokemonDetailsViewModel) => {
   return (
     <>
@@ -71,7 +72,7 @@ const PokemonDetails = ({
           )}
         </Wrapper>
       )}
-      {!findingPokemonDetails && name && picture && (
+      {!findingPokemonDetails && isFromPokemonList && name && picture && (
         <CapturePokemonButton
           testID="capture_pokemon_id"
           onPress={() => capturePokemon(name, picture)}

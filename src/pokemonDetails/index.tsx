@@ -7,7 +7,7 @@ import saveInMyPokemonList from "./data/saveInMyPokemonList";
 import Url from "../global/constants/Urls";
 
 const PokemonDetailsFactory = () => {
-  const { id } = useLocalSearchParams();
+  const { id, isFromPokemonList } = useLocalSearchParams();
   const pokemonDetails = useRemotePokemonDetails({
     url: Url.baseUrlWithParamId(id as unknown as number),
     queryFn: fetch,
@@ -17,7 +17,11 @@ const PokemonDetailsFactory = () => {
 
   return (
     <PokemonDetails
-      {...usePokemonDetails(pokemonDetails, saveInMyPokemonList)}
+      {...usePokemonDetails(
+        pokemonDetails,
+        saveInMyPokemonList,
+        JSON.parse(isFromPokemonList as string),
+      )}
     />
   );
 };

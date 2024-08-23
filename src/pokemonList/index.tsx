@@ -47,7 +47,7 @@ const PokemonListFactory = () => {
     if (typeof val === "string") setSearchValue(val);
   };
 
-  const { seePokemonDetails } = useSeePokemonDetails();
+  const { seePokemonDetails } = useSeePokemonDetails(true);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const pokemonList = useRemotePokemonList({
     url: Url.baseUrl,

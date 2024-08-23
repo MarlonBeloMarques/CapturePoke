@@ -7,6 +7,7 @@ type PokemonDetailsViewModel = {
   findingPokemonDetails: boolean;
   errorMessage: string;
   capturePokemon: (name: string, picture: string) => Promise<void>;
+  isFromPokemonList: boolean;
 };
 
 export default PokemonDetailsViewModel;

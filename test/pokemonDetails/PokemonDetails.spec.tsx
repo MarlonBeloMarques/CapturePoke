@@ -122,10 +122,11 @@ describe("PokemonDetails: ", () => {
   );
 
   test("should call the capturePokemon with success when pressing the button", () => {
+    const isFromPokemonList = true;
     const capturePokemon = jest.fn();
     const name = getNameFake();
     const picture = getPictureFake();
-    makeSut({ name, picture, capturePokemon });
+    makeSut({ name, picture, capturePokemon, isFromPokemonList });
 
     fireEvent.press(screen.getByTestId("capture_pokemon_id"));
 
@@ -154,6 +155,7 @@ type SutProps = {
   specie?: { name: string; species: string[] };
   findingPokemonDetails?: boolean;
   errorMessage?: string;
+  isFromPokemonList?: boolean;
   capturePokemon?: (name: string, picture: string) => Promise<void>;
 };
 
@@ -166,6 +168,7 @@ const makeSut = ({
   findingPokemonDetails = false,
   errorMessage = "",
   capturePokemon = async () => {},
+  isFromPokemonList = false,
 }: SutProps) => {
   return render(
     <PokemonDetails
@@ -177,6 +180,7 @@ const makeSut = ({
       findingPokemonDetails={findingPokemonDetails}
       errorMessage={errorMessage}
       capturePokemon={capturePokemon}
+      isFromPokemonList={isFromPokemonList}
     />,
   );
 };

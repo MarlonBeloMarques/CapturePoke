@@ -15,6 +15,7 @@ export const pokemonDetailsEmpty: Details = {
 const usePokemonDetails = (
   pokemonDetails: PokemonDetails,
   saveInMyPokemonList: (name: string, picture: string) => Promise<boolean>,
+  isFromPokemonList: boolean,
 ): PokemonDetailsViewModel => {
   const details = pokemonDetails.get();
 
@@ -65,6 +66,7 @@ const usePokemonDetails = (
     picture: details?.picture || "",
     types: details?.types || [],
     capturePokemon,
+    isFromPokemonList,
   };
 };
 

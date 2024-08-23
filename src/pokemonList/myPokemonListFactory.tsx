@@ -7,7 +7,7 @@ import useLocalPokemonList from "./data/useLocalMyPokemonList";
 
 const MyPokemonListFactory = () => {
   const { get, finding } = useLocalPokemonList();
-  const { seePokemonDetails } = useSeePokemonDetails();
+  const { seePokemonDetails } = useSeePokemonDetails(false);
 
   const pokemonList: PokemonList = {
     get,
