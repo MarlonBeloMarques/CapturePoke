@@ -2,40 +2,8 @@ import { renderHook, waitFor } from "@testing-library/react-native";
 import getPokemonListFake from "../doubles/fakers/getPokemonListFake";
 import { Pokemon } from "@/src/pokemonList/PokemonListViewModel";
 import usePokemonList from "@/src/pokemonList/usePokemonList";
-import PokemonList from "@/src/pokemonList/domain/PokemonList";
-
-const formatName = (name: string) =>
-  name.charAt(0).toUpperCase() + name.slice(1);
-
-class PokemonListFake implements PokemonList {
-  pokemonList: Pokemon[] = [];
-  fetchNextListHasBeenCalled = false;
-  constructor(
-    pokemonList: Pokemon[],
-    readonly isFinding: boolean = true,
-    readonly newPokemonList: Pokemon[] = getPokemonListFake(3),
-  ) {
-    this.pokemonList = pokemonList;
-  }
-  get = (): any[] => {
-    if (this.fetchNextListHasBeenCalled) {
-      this.addInPokemonList(this.newPokemonList);
-    }
-    return this.pokemonList;
-  };
-
-  addInPokemonList = (pokemonList: Pokemon[]) => {
-    this.pokemonList = [...this.pokemonList, ...pokemonList];
-  };
-
-  finding = () => {
-    return this.isFinding;
-  };
-
-  fetchNextList = () => {
-    this.fetchNextListHasBeenCalled = true;
-  };
-}
+import formatName from "@/src/global/helpers/formatName";
+import PokemonListFake from "../doubles/fakers/pokemonListFake";
 
 describe("PokemonList: usePokemonList", () => {
   test("should get the pokemonList with success", () => {

@@ -1,40 +1,12 @@
-import useRemotePokemonDetails, {
-  Response,
-  SpeciesResponse,
-} from "@/src/pokemonDetails/data/useRemotePokemonDetails";
+import useRemotePokemonDetails from "@/src/pokemonDetails/data/useRemotePokemonDetails";
+import useQueryMock from "@/test/doubles/mocks/useQueryMock";
+import getPokemonDetailsStub from "@/test/doubles/stubs/pokemonDetailsStub";
+import getSpeciesDataStub from "@/test/doubles/stubs/speciesDataStub";
 import { faker } from "@faker-js/faker";
-import { useQuery } from "@tanstack/react-query";
 
 jest.mock("@tanstack/react-query", () => ({
   useQuery: jest.fn(),
 }));
-
-const useQueryMock = (
-  data1: Response,
-  data2: SpeciesResponse,
-  data1IsSuccess = true,
-  data2IsSuccess = true,
-  isFetchingData1 = false,
-  isFetchingData2 = false,
-) => {
-  return (useQuery as jest.Mock)
-    .mockImplementationOnce(({ queryFn }) => {
-      queryFn();
-      return {
-        data: data1,
-        isSuccess: data1IsSuccess,
-        isFetching: isFetchingData1,
-      };
-    })
-    .mockImplementationOnce(({ queryFn }) => {
-      queryFn();
-      return {
-        data: data2,
-        isSuccess: data2IsSuccess,
-        isFetching: isFetchingData2,
-      };
-    });
-};
 
 describe("pokemonDetails: useRemotePokemonDetails", () => {
   const data = {
@@ -55,32 +27,8 @@ describe("pokemonDetails: useRemotePokemonDetails", () => {
     id: 1,
   };
 
-  const details = {
-    id: 1,
-    name: "bulbasaur",
-    picture:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
-    abilities: ["overgrow"],
-    types: ["grass"],
-    specie: {
-      name: "monster",
-      species: ["bulbasaur", "ivysaur"],
-    },
-  };
-
-  const speciesData = {
-    name: "monster",
-    pokemon_species: [
-      {
-        name: "bulbasaur",
-        url: "https://pokeapi.co/api/v2/pokemon-species/1/",
-      },
-      {
-        name: "ivysaur",
-        url: "https://pokeapi.co/api/v2/pokemon-species/2/",
-      },
-    ],
-  };
+  const details = getPokemonDetailsStub();
+  const speciesData = getSpeciesDataStub();
 
   test("should get the pokemon details with correct url", () => {
     useQueryMock(data, speciesData);

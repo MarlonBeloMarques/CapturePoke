@@ -46,7 +46,7 @@ describe("PokemonDetails: usePokemonDetails", () => {
   test("should get the pokemonDetails correctly", () => {
     const pokemonDetails = new PokemonDetailsFake();
     const { result } = renderHook(() =>
-      usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+      usePokemonDetails(pokemonDetails, saveInMyPokemonList, false),
     );
 
     expect(result.current.name).toEqual(
@@ -72,7 +72,7 @@ describe("PokemonDetails: usePokemonDetails", () => {
     (details) => {
       const pokemonDetails = new PokemonDetailsFake(details!);
       const { result } = renderHook(() =>
-        usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+        usePokemonDetails(pokemonDetails, saveInMyPokemonList, false),
       );
 
       expect(result.current.name).toEqual("");
@@ -89,7 +89,7 @@ describe("PokemonDetails: usePokemonDetails", () => {
     (details) => {
       const pokemonDetails = new PokemonDetailsFake(details!);
       const { result } = renderHook(() =>
-        usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+        usePokemonDetails(pokemonDetails, saveInMyPokemonList, false),
       );
 
       expect(result.current.errorMessage).toEqual(
@@ -101,7 +101,7 @@ describe("PokemonDetails: usePokemonDetails", () => {
   test("should get empty errorMessage when pokemonDetails is not empty", () => {
     const pokemonDetails = new PokemonDetailsFake();
     const { result } = renderHook(() =>
-      usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+      usePokemonDetails(pokemonDetails, saveInMyPokemonList, false),
     );
 
     expect(result.current.errorMessage).toEqual("");
@@ -110,7 +110,7 @@ describe("PokemonDetails: usePokemonDetails", () => {
   test("should get the findingPokemonDetails equals true when its getting the pokemonDetails", () => {
     const pokemonDetails = new PokemonDetailsFake(details, true);
     const { result } = renderHook(() =>
-      usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+      usePokemonDetails(pokemonDetails, saveInMyPokemonList, false),
     );
 
     expect(result.current.findingPokemonDetails).toEqual(true);
@@ -119,7 +119,7 @@ describe("PokemonDetails: usePokemonDetails", () => {
   test("should get the findingPokemonDetails equals false when it is finished of the get the pokemonDetails", () => {
     const pokemonDetails = new PokemonDetailsFake(details, false);
     const { result } = renderHook(() =>
-      usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+      usePokemonDetails(pokemonDetails, saveInMyPokemonList, false),
     );
 
     expect(result.current.findingPokemonDetails).toEqual(false);
@@ -132,7 +132,7 @@ describe("PokemonDetails: usePokemonDetails", () => {
       .mockReturnValue(Promise.resolve(true));
     const pokemonDetails = new PokemonDetailsFake(details, false);
     const { result } = renderHook(() =>
-      usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+      usePokemonDetails(pokemonDetails, saveInMyPokemonList, false),
     );
 
     await result.current.capturePokemon(details.name, details.picture);
@@ -153,7 +153,7 @@ describe("PokemonDetails: usePokemonDetails", () => {
         .mockReturnValue(Promise.resolve(true));
       const pokemonDetails = new PokemonDetailsFake(details, false);
       const { result } = renderHook(() =>
-        usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+        usePokemonDetails(pokemonDetails, saveInMyPokemonList, false),
       );
 
       await result.current.capturePokemon(params?.name!, params?.picture!);
@@ -170,7 +170,7 @@ describe("PokemonDetails: usePokemonDetails", () => {
       .mockReturnValue(Promise.resolve(false));
     const pokemonDetails = new PokemonDetailsFake(details, false);
     const { result } = renderHook(() =>
-      usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+      usePokemonDetails(pokemonDetails, saveInMyPokemonList, false),
     );
 
     await result.current.capturePokemon(details.name, details.picture);

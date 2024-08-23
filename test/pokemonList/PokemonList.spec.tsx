@@ -2,9 +2,7 @@ import PokemonList from "@/src/pokemonList/PokemonList";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { Pokemon } from "@/src/pokemonList/PokemonListViewModel";
 import getPokemonListFake from "../doubles/fakers/getPokemonListFake";
-
-const formatName = (name: string) =>
-  name.charAt(0).toUpperCase() + name.slice(1);
+import formatName from "@/src/global/helpers/formatName";
 
 describe("PokemonList", () => {
   test("should show pokemon list correctly", () => {
