@@ -13,15 +13,16 @@ jest.mock("expo-router", () => ({
 }));
 
 describe("pokemonList: useSeePokemonDetails", () => {
-  test("should call navigate function to PokemonDetails with correct id param", () => {
+  test("should call navigate function to PokemonDetails with correct id, isFromPokemonList param", () => {
     const navigation = useNavigation as jest.Mock;
     const id = 1234;
 
-    useSeePokemonDetails().seePokemonDetails(id);
+    useSeePokemonDetails(false).seePokemonDetails(id);
 
     expect(navigation().navigate).toHaveBeenCalledTimes(1);
     expect(navigation().navigate).toHaveBeenCalledWith("pokemonDetails", {
       id: id,
+      isFromPokemonList: false,
     });
   });
 
