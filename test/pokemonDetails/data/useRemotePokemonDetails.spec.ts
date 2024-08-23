@@ -9,6 +9,7 @@ jest.mock("@tanstack/react-query", () => ({
 }));
 
 type Response = {
+  id: number;
   abilities: { ability: { name: string; url: string } }[];
   name: string;
   types: {
@@ -16,30 +17,79 @@ type Response = {
   }[];
 };
 
-const useQueryMock = (data: Response, isFetching = false) => {
-  return (useQuery as jest.Mock).mockImplementation(({ queryFn }) => {
-    queryFn();
-    return {
-      data,
-      isSuccess: true,
-      isFetching,
-    };
-  });
+type SpeciesResponse = {
+  name: string;
+  pokemon_species: { name: string; url: string }[];
+};
+
+const useQueryMock = (data1: Response, data2: SpeciesResponse) => {
+  return (useQuery as jest.Mock)
+    .mockImplementationOnce(({ queryFn }) => {
+      queryFn();
+      return {
+        data: data1,
+        isSuccess: true,
+        isFetching: false,
+      };
+    })
+    .mockImplementationOnce(({ queryFn }) => {
+      queryFn();
+      return {
+        data: data2,
+        isSuccess: true,
+        isFetching: false,
+      };
+    });
 };
 
 describe("pokemonDetails: useRemotePokemonDetails", () => {
   const data = {
-    abilities: [{ ability: { name: "", url: "" } }],
-    name: "",
+    abilities: [
+      {
+        ability: {
+          name: "overgrow",
+          url: "https://pokeapi.co/api/v2/ability/65/",
+        },
+      },
+    ],
+    name: "bulbasaur",
     types: [
       {
-        type: { name: "", url: "" },
+        type: { name: "grass", url: "https://pokeapi.co/api/v2/type/12/" },
+      },
+    ],
+    id: 1,
+  };
+
+  const details = {
+    id: 1,
+    name: "bulbasaur",
+    picture:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
+    abilities: ["overgrow"],
+    types: ["grass"],
+    specie: {
+      name: "monster",
+      species: ["bulbasaur", "ivysaur"],
+    },
+  };
+
+  const speciesData = {
+    name: "monster",
+    pokemon_species: [
+      {
+        name: "bulbasaur",
+        url: "https://pokeapi.co/api/v2/pokemon-species/1/",
+      },
+      {
+        name: "ivysaur",
+        url: "https://pokeapi.co/api/v2/pokemon-species/2/",
       },
     ],
   };
 
   test("should get the pokemon details with correct url", () => {
-    useQueryMock(data);
+    useQueryMock(data, speciesData);
     const queryFnSpy = jest.fn((url: string) =>
       Promise.resolve({
         json: jest.fn().mockResolvedValue(data),
@@ -47,41 +97,112 @@ describe("pokemonDetails: useRemotePokemonDetails", () => {
     );
 
     const url = faker.internet.url();
+    const urlSpecies = faker.internet.url();
 
     const { get } = useRemotePokemonDetails({
       url: url,
       urlPicture: "",
+      urlSpecies,
       queryFn: queryFnSpy,
     });
 
     get();
 
-    expect(queryFnSpy).toHaveBeenCalledTimes(1);
-    expect(queryFnSpy).toHaveBeenCalledWith(url);
+    expect(queryFnSpy).toHaveBeenCalledTimes(2);
+    expect(queryFnSpy.mock.calls[0]).toEqual([url]);
+    expect(queryFnSpy.mock.calls[1]).toEqual([urlSpecies + data.id]);
+  });
+
+  test("should get the pokemon details with success", () => {
+    useQueryMock(data, speciesData);
+    const queryFn = (url: string) =>
+      Promise.resolve({
+        json: jest.fn().mockResolvedValue(data),
+      });
+
+    const url = faker.internet.url();
+    const { get } = useRemotePokemonDetails({
+      url: url,
+      urlPicture:
+        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon",
+      urlSpecies: "https://pokeapi.co/api/v2/egg-group/",
+      queryFn: queryFn as unknown as (url: string) => Promise<any>,
+    });
+
+    const pokemonDetails = get();
+
+    expect(pokemonDetails).toEqual(details);
   });
 });
 
 const useRemotePokemonDetails = ({
   url,
+  urlSpecies,
   urlPicture,
   queryFn,
 }: {
   url: string;
   urlPicture: string;
+  urlSpecies: string;
   queryFn: (url: string) => Promise<any>;
 }): PokemonDetails => {
   const useGet = (): Details => {
-    useQuery({
+    const { data, isSuccess } = useQuery({
       queryKey: ["remotePokemonDetails"],
       queryFn: () => queryFn(url).then((res) => res.json()),
     });
+
+    if (isSuccess) {
+      const detail = data as Response;
+      return {
+        id: detail.id,
+        name: detail.name,
+        abilities: detail.abilities.map((ability) => ability.ability.name),
+        picture: urlPicture + `/${1}.png`,
+        types: detail.types.map((type) => type.type.name),
+        specie: { name: "", species: [] },
+      };
+    }
+
+    return {
+      id: 0,
+      abilities: [],
+      name: "",
+      picture: "",
+      specie: { name: "", species: [] },
+      types: [],
+    };
+  };
+
+  const useGetDetailsBuilder = (): Details => {
+    const details = useGet();
+    const specie = useGetSpecie(details.id);
+
+    return { ...details, specie: specie };
+  };
+
+  const useGetSpecie = (id: number): { name: string; species: string[] } => {
+    const { data, isSuccess } = useQuery({
+      queryKey: ["remotePokemonSpecies"],
+      queryFn: () => queryFn(urlSpecies + id).then((res) => res.json()),
+    });
+
+    if (isSuccess) {
+      const specie = data as SpeciesResponse;
+      return {
+        name: specie.name,
+        species: specie.pokemon_species.map((specie) => specie.name),
+      };
+    }
+
+    return { name: "", species: [] };
   };
 
   const finding = () => {
     return false;
   };
   return {
-    get: useGet,
+    get: useGetDetailsBuilder,
     finding,
   };
 };
