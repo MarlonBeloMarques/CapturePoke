@@ -27,6 +27,8 @@ const useQueryMock = (
   data2: SpeciesResponse,
   data1IsSuccess = true,
   data2IsSuccess = true,
+  isFetchingData1 = false,
+  isFetchingData2 = false,
 ) => {
   return (useQuery as jest.Mock)
     .mockImplementationOnce(({ queryFn }) => {
@@ -34,7 +36,7 @@ const useQueryMock = (
       return {
         data: data1,
         isSuccess: data1IsSuccess,
-        isFetching: false,
+        isFetching: isFetchingData1,
       };
     })
     .mockImplementationOnce(({ queryFn }) => {
@@ -42,7 +44,7 @@ const useQueryMock = (
       return {
         data: data2,
         isSuccess: data2IsSuccess,
-        isFetching: false,
+        isFetching: isFetchingData2,
       };
     });
 };
@@ -197,6 +199,66 @@ describe("pokemonDetails: useRemotePokemonDetails", () => {
       types: pokemonDetails.types,
     });
   });
+
+  test("should finding return true when both isFetching are true", () => {
+    const isFetchingData1 = true;
+    const isFetchingData2 = true;
+    useQueryMock(
+      data,
+      speciesData,
+      true,
+      true,
+      isFetchingData1,
+      isFetchingData2,
+    );
+    const queryFn = (url: string) =>
+      Promise.resolve({
+        json: jest.fn().mockResolvedValue(data),
+      });
+
+    const url = faker.internet.url();
+    const { get, finding } = useRemotePokemonDetails({
+      url: url,
+      urlPicture:
+        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon",
+      urlSpecies: "https://pokeapi.co/api/v2/egg-group/",
+      queryFn: queryFn as unknown as (url: string) => Promise<any>,
+    });
+
+    get();
+
+    expect(finding()).toEqual(true);
+  });
+
+  test("should finding return false when isFetching is false", () => {
+    const isFetchingData1 = true;
+    const isFetchingData2 = false;
+    useQueryMock(
+      data,
+      speciesData,
+      true,
+      true,
+      isFetchingData1,
+      isFetchingData2,
+    );
+    const queryFn = (url: string) =>
+      Promise.resolve({
+        json: jest.fn().mockResolvedValue(data),
+      });
+
+    const url = faker.internet.url();
+    const { get, finding } = useRemotePokemonDetails({
+      url: url,
+      urlPicture:
+        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon",
+      urlSpecies: "https://pokeapi.co/api/v2/egg-group/",
+      queryFn: queryFn as unknown as (url: string) => Promise<any>,
+    });
+
+    get();
+
+    expect(finding()).toEqual(false);
+  });
 });
 
 const useRemotePokemonDetails = ({
@@ -210,11 +272,16 @@ const useRemotePokemonDetails = ({
   urlSpecies: string;
   queryFn: (url: string) => Promise<any>;
 }): PokemonDetails => {
+  let isFetchingPokemonDetails = false;
+  let isFetchingPokemonSpecies = false;
+
   const useGet = (): Details => {
-    const { data, isSuccess } = useQuery({
+    const { data, isSuccess, isFetching } = useQuery({
       queryKey: ["remotePokemonDetails"],
       queryFn: () => queryFn(url).then((res) => res.json()),
     });
+
+    isFetchingPokemonDetails = isFetching;
 
     if (isSuccess) {
       const detail = data as Response;
@@ -249,10 +316,12 @@ const useRemotePokemonDetails = ({
   };
 
   const useGetSpecie = (id: number): { name: string; species: string[] } => {
-    const { data, isSuccess } = useQuery({
+    const { data, isSuccess, isFetching } = useQuery({
       queryKey: ["remotePokemonSpecies"],
       queryFn: () => queryFn(urlSpecies + id).then((res) => res.json()),
     });
+
+    isFetchingPokemonSpecies = isFetching;
 
     if (isSuccess) {
       const specie = data as SpeciesResponse;
@@ -266,8 +335,9 @@ const useRemotePokemonDetails = ({
   };
 
   const finding = () => {
-    return false;
+    return isFetchingPokemonDetails && isFetchingPokemonSpecies;
   };
+
   return {
     get: useGetDetailsBuilder,
     finding,
