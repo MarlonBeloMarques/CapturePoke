@@ -1,10 +1,20 @@
+import getMyPokemonList from "@/src/pokemonList/data/getMyPokemonList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const saveInMyPokemonList = async (
   name: string,
   picture: string,
 ): Promise<boolean> => {
-  const list: { name: string; picture: string }[] = [];
+  let list: { name: string; picture: string }[] = [];
+
+  const myPokemonList = await getMyPokemonList();
+
+  if (myPokemonList) {
+    list = [...myPokemonList].map((pokemon) => ({
+      name: pokemon.name.toLowerCase(),
+      picture: pokemon.picture,
+    }));
+  }
 
   try {
     list.push({ name: name.toLowerCase(), picture });
