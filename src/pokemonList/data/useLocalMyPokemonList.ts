@@ -20,6 +20,7 @@ const useLocalMyPokemonList = (): PokemonList => {
   return {
     get: () => myPokemonList,
     finding: () => isFinding,
+    fetchNextList: () => {},
   };
 };
 
