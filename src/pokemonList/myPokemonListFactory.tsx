@@ -3,10 +3,17 @@ import PokemonListView from "./PokemonList";
 import usePokemonList from "./usePokemonList";
 import useSeePokemonDetails from "./helpers/useSeePokemonDetails";
 import PokemonList from "./domain/PokemonList";
+import useLocalPokemonList from "./data/useLocalMyPokemonList";
 
 const MyPokemonListFactory = () => {
+  const { get, finding } = useLocalPokemonList();
   const { seePokemonDetails } = useSeePokemonDetails();
-  const pokemonList: PokemonList = { get: () => [], finding: () => true };
+
+  const pokemonList: PokemonList = {
+    get,
+    finding,
+  };
+
   return (
     <PokemonListView
       {...usePokemonList({
