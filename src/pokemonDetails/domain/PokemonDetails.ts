@@ -1,4 +1,5 @@
 export type Details = {
+  id: number;
   name: string;
   picture: string;
   abilities: string[];

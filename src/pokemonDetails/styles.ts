@@ -3,7 +3,6 @@ import { ThemedView } from "../global/components/ThemedView";
 import { ThemedText } from "../global/components/ThemedText";
 
 export const Wrapper = styled(ThemedView)`
-  flex: 1;
   margin: 20px;
 `;
 

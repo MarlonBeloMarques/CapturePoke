@@ -22,7 +22,7 @@ const PokemonDetails = ({
   errorMessage,
 }: PokemonDetailsViewModel) => {
   return (
-    <Wrapper>
+    <>
       {!findingPokemonDetails && errorMessage && (
         <ThemedText testID="error_message_id">{errorMessage}</ThemedText>
       )}
@@ -32,7 +32,7 @@ const PokemonDetails = ({
         </LoadingWrapper>
       )}
       {!findingPokemonDetails && (
-        <>
+        <Wrapper>
           {name && <PokemonName testID="pokemon_name_id">{name}</PokemonName>}
           {picture && (
             <PictureWrapper>
@@ -66,9 +66,9 @@ const PokemonDetails = ({
               ))}
             </HorizontalScroll>
           )}
-        </>
+        </Wrapper>
       )}
-    </Wrapper>
+    </>
   );
 };
 

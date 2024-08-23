@@ -3,6 +3,7 @@ import PokemonDetails, { Details } from "./domain/PokemonDetails";
 import PokemonDetailsViewModel from "./PokemonDetailsViewModel";
 
 export const pokemonDetailsEmpty: Details = {
+  id: 0,
   abilities: [],
   name: "",
   picture: "",

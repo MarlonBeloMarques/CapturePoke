@@ -43,7 +43,7 @@ const useRemotePokemonDetails = ({
         id: detail.id,
         name: detail.name,
         abilities: detail.abilities.map((ability) => ability.ability.name),
-        picture: urlPicture + `/${1}.png`,
+        picture: urlPicture + `/${detail.id}.png`,
         types: detail.types.map((type) => type.type.name),
         specie: { name: "", species: [] },
       };
