@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen } from "@testing-library/react-native";
 import getNameFake from "../doubles/fakers/getNameFake";
 import getPictureFake from "../doubles/fakers/getPictureFake";
 import PokemonDetails from "@/src/pokemonDetails/PokemonDetails";
@@ -120,6 +120,30 @@ describe("PokemonDetails: ", () => {
       expect(screen.queryByTestId("error_message_id")).not.toBeTruthy();
     },
   );
+
+  test("should call the capturePokemon with success when pressing the button", () => {
+    const capturePokemon = jest.fn();
+    const name = getNameFake();
+    const picture = getPictureFake();
+    makeSut({ name, picture, capturePokemon });
+
+    fireEvent.press(screen.getByTestId("capture_pokemon_id"));
+
+    expect(capturePokemon).toHaveBeenCalledTimes(1);
+    expect(capturePokemon).toHaveBeenCalledWith(name, picture);
+  });
+
+  test.each([{ name: "", picture: "" }, null])(
+    "should not show capturePokemon button if name and picture are undefined",
+    (details) => {
+      makeSut({
+        name: details?.name,
+        picture: details?.picture,
+      });
+
+      expect(screen.queryByTestId("capture_pokemon_id")).not.toBeTruthy();
+    },
+  );
 });
 
 type SutProps = {
@@ -130,6 +154,7 @@ type SutProps = {
   specie?: { name: string; species: string[] };
   findingPokemonDetails?: boolean;
   errorMessage?: string;
+  capturePokemon?: (name: string, picture: string) => void;
 };
 
 const makeSut = ({
@@ -140,6 +165,7 @@ const makeSut = ({
   specie = { name: "", species: [] },
   findingPokemonDetails = false,
   errorMessage = "",
+  capturePokemon = () => {},
 }: SutProps) => {
   return render(
     <PokemonDetails
@@ -150,6 +176,7 @@ const makeSut = ({
       types={types}
       findingPokemonDetails={findingPokemonDetails}
       errorMessage={errorMessage}
+      capturePokemon={capturePokemon}
     />,
   );
 };

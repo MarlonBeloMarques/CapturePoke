@@ -1,10 +1,12 @@
 import { ActivityIndicator } from "react-native";
 import {
+  CapturePokemonButton,
   HorizontalScroll,
   LoadingWrapper,
   Name,
   Picture,
   PictureWrapper,
+  PokeBallImage,
   PokemonName,
   Title,
   Wrapper,
@@ -20,6 +22,7 @@ const PokemonDetails = ({
   specie,
   findingPokemonDetails,
   errorMessage,
+  capturePokemon,
 }: PokemonDetailsViewModel) => {
   return (
     <>
@@ -67,6 +70,14 @@ const PokemonDetails = ({
             </HorizontalScroll>
           )}
         </Wrapper>
+      )}
+      {!findingPokemonDetails && name && picture && (
+        <CapturePokemonButton
+          testID="capture_pokemon_id"
+          onPress={() => capturePokemon(name, picture)}
+        >
+          <PokeBallImage />
+        </CapturePokemonButton>
       )}
     </>
   );

@@ -42,3 +42,18 @@ export const Title = styled(ThemedText)`
 export const Name = styled(ThemedText)`
   margin: 12px;
 `;
+
+export const CapturePokemonButton = styled.TouchableOpacity.attrs({
+  activeOpacity: 0.8,
+})`
+  position: absolute;
+  bottom: 80px;
+  align-self: center;
+`;
+
+export const PokeBallImage = styled.Image.attrs({
+  source: require("../../assets/images/pokeball.png"),
+})`
+  width: 100px;
+  height: 100px;
+`;
