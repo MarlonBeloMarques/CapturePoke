@@ -1,3 +1,4 @@
+import { Alert } from "react-native";
 import formatName from "../global/helpers/formatName";
 import PokemonDetails, { Details } from "./domain/PokemonDetails";
 import PokemonDetailsViewModel from "./PokemonDetailsViewModel";
@@ -13,6 +14,7 @@ export const pokemonDetailsEmpty: Details = {
 
 const usePokemonDetails = (
   pokemonDetails: PokemonDetails,
+  saveInMyPokemonList: (name: string, picture: string) => Promise<boolean>,
 ): PokemonDetailsViewModel => {
   const details = pokemonDetails.get();
 
@@ -38,6 +40,13 @@ const usePokemonDetails = (
     return "";
   };
 
+  const capturePokemon = async (name: string, picture: string) => {
+    const saved = await saveInMyPokemonList(name, picture);
+    if (saved) {
+      Alert.alert("O pokemon foi capturado com sucesso.");
+    }
+  };
+
   return {
     abilities: details?.abilities || [],
     specie: {
@@ -49,6 +58,7 @@ const usePokemonDetails = (
     name: getName() || "",
     picture: details?.picture || "",
     types: details?.types || [],
+    capturePokemon,
   };
 };
 

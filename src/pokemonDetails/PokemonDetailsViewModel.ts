@@ -6,7 +6,7 @@ type PokemonDetailsViewModel = {
   specie: { name: string; species: string[] };
   findingPokemonDetails: boolean;
   errorMessage: string;
-  capturePokemon: (name: string, picture: string) => void;
+  capturePokemon: (name: string, picture: string) => Promise<void>;
 };
 
 export default PokemonDetailsViewModel;

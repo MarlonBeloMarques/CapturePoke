@@ -6,8 +6,10 @@ import usePokemonDetails, {
   pokemonDetailsEmpty,
 } from "@/src/pokemonDetails/usePokemonDetails";
 import { renderHook } from "@testing-library/react-native";
+import { Alert } from "react-native";
 
 const details = {
+  id: 1,
   name: "bulbasaur",
   picture:
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
@@ -34,9 +36,14 @@ class PokemonDetailsFake implements PokemonDetails {
 }
 
 describe("PokemonDetails: usePokemonDetails", () => {
+  const saveInMyPokemonList = async () => {
+    return false;
+  };
   test("should get the pokemonDetails correctly", () => {
     const pokemonDetails = new PokemonDetailsFake();
-    const { result } = renderHook(() => usePokemonDetails(pokemonDetails));
+    const { result } = renderHook(() =>
+      usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+    );
 
     expect(result.current.name).toEqual(
       formatName(pokemonDetails.pokemonDetails.name),
@@ -60,7 +67,9 @@ describe("PokemonDetails: usePokemonDetails", () => {
     "should get the pokemonDetails empty",
     (details) => {
       const pokemonDetails = new PokemonDetailsFake(details!);
-      const { result } = renderHook(() => usePokemonDetails(pokemonDetails));
+      const { result } = renderHook(() =>
+        usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+      );
 
       expect(result.current.name).toEqual("");
       expect(result.current.abilities).toEqual([]);
@@ -75,7 +84,9 @@ describe("PokemonDetails: usePokemonDetails", () => {
     "should get the errorMessage when pokemonDetails is empty",
     (details) => {
       const pokemonDetails = new PokemonDetailsFake(details!);
-      const { result } = renderHook(() => usePokemonDetails(pokemonDetails));
+      const { result } = renderHook(() =>
+        usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+      );
 
       expect(result.current.errorMessage).toEqual(
         "Parece que não encontramos os detalhes do pokemon.",
@@ -85,22 +96,47 @@ describe("PokemonDetails: usePokemonDetails", () => {
 
   test("should get empty errorMessage when pokemonDetails is not empty", () => {
     const pokemonDetails = new PokemonDetailsFake();
-    const { result } = renderHook(() => usePokemonDetails(pokemonDetails));
+    const { result } = renderHook(() =>
+      usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+    );
 
     expect(result.current.errorMessage).toEqual("");
   });
 
   test("should get the findingPokemonDetails equals true when its getting the pokemonDetails", () => {
     const pokemonDetails = new PokemonDetailsFake(details, true);
-    const { result } = renderHook(() => usePokemonDetails(pokemonDetails));
+    const { result } = renderHook(() =>
+      usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+    );
 
     expect(result.current.findingPokemonDetails).toEqual(true);
   });
 
   test("should get the findingPokemonDetails equals false when it is finished of the get the pokemonDetails", () => {
     const pokemonDetails = new PokemonDetailsFake(details, false);
-    const { result } = renderHook(() => usePokemonDetails(pokemonDetails));
+    const { result } = renderHook(() =>
+      usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+    );
 
     expect(result.current.findingPokemonDetails).toEqual(false);
+  });
+
+  test("should call saveInMyPokemonList and Alert correctly when calling capturePokemon function", async () => {
+    const alertSpy = jest.spyOn(Alert, "alert");
+    const saveInMyPokemonList = jest
+      .fn()
+      .mockReturnValue(Promise.resolve(true));
+    const pokemonDetails = new PokemonDetailsFake(details, false);
+    const { result } = renderHook(() =>
+      usePokemonDetails(pokemonDetails, saveInMyPokemonList),
+    );
+
+    await result.current.capturePokemon(details.name, details.picture);
+
+    expect(saveInMyPokemonList).toHaveBeenCalledWith(
+      details.name,
+      details.picture,
+    );
+    expect(alertSpy).toHaveBeenCalledTimes(1);
   });
 });

@@ -154,7 +154,7 @@ type SutProps = {
   specie?: { name: string; species: string[] };
   findingPokemonDetails?: boolean;
   errorMessage?: string;
-  capturePokemon?: (name: string, picture: string) => void;
+  capturePokemon?: (name: string, picture: string) => Promise<void>;
 };
 
 const makeSut = ({
@@ -165,7 +165,7 @@ const makeSut = ({
   specie = { name: "", species: [] },
   findingPokemonDetails = false,
   errorMessage = "",
-  capturePokemon = () => {},
+  capturePokemon = async () => {},
 }: SutProps) => {
   return render(
     <PokemonDetails
