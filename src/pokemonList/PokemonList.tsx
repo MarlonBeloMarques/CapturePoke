@@ -10,7 +10,7 @@ const PokemonList = ({
   selectPokemon,
 }: PokemonListViewModel) => {
   return (
-    <View>
+    <View style={{ flex: 1, justifyContent: "center" }}>
       {!findingPokemons && errorMessage && (
         <ThemedText testID="error_message_id">{errorMessage}</ThemedText>
       )}

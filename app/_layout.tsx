@@ -39,6 +39,7 @@ export default function RootLayout() {
         <Stack>
           <Stack.Screen name="pokemonList" />
           <Stack.Screen name="pokemonDetails" />
+          <Stack.Screen name="myPokemonList" />
         </Stack>
       </QueryClientProvider>
     </ThemeProvider>
