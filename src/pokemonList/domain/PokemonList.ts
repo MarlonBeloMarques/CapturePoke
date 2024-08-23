@@ -7,4 +7,5 @@ export type Pokemon = {
 export default interface PokemonList {
   get: () => Pokemon[];
   finding: () => boolean;
+  fetchNextList: () => void;
 }

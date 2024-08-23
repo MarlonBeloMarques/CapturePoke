@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import PokemonList from "../domain/PokemonList";
 
 export type Response = {
@@ -6,6 +6,12 @@ export type Response = {
   next: string;
   previous: string;
   results: { name: string; url: string }[];
+};
+
+const getOffset = (url: string) => {
+  const urlObj = new URL(url);
+  const offset = urlObj.searchParams.get("offset");
+  return offset ? parseInt(offset, 10) : null;
 };
 
 const useRemotePokemonList = ({
@@ -17,26 +23,42 @@ const useRemotePokemonList = ({
   urlPicture: string;
   queryFn: (url: string) => Promise<any>;
 }): PokemonList => {
-  let isFetchingState = false;
+  const queryFnBuilder = async ({ pageParam = 20 }) => {
+    return queryFn(`${url}?offset=${pageParam}&limit=20`).then((res) =>
+      res.json(),
+    );
+  };
 
-  const useGet = () => {
-    const { data, isSuccess, isFetching } = useQuery({
-      queryKey: ["remotePokemonList"],
-      queryFn: () => queryFn(url).then((res) => res.json()),
-    });
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    isSuccess,
+  } = useInfiniteQuery({
+    queryKey: ["remotePokemonList"],
+    queryFn: queryFnBuilder,
+    initialPageParam: 20,
+    getNextPageParam: (lastPage) => {
+      if (lastPage.next) {
+        return getOffset(lastPage.next);
+      } else {
+        return undefined;
+      }
+    },
+  });
 
-    isFetchingState = isFetching;
+  const getPokemonList = () => {
+    if (!isSuccess) return [];
 
-    if (isSuccess) {
-      const list = (data as Response).results;
-      return list.map((pokemon) => ({
+    return data.pages.flatMap((page: Response) =>
+      page.results.map((pokemon) => ({
         id: getId(pokemon.url),
         name: pokemon.name,
-        picture: urlPicture + `/${getId(pokemon.url)}.png`,
-      }));
-    }
-
-    return [];
+        picture: `${urlPicture}/${getId(pokemon.url)}.png`,
+      })),
+    );
   };
 
   const getId = (url: string) => {
@@ -44,14 +66,16 @@ const useRemotePokemonList = ({
       const urlArr = url.split("pokemon/");
       return Number(urlArr[1].replace("/", ""));
     }
-
     return 0;
   };
 
-  const finding = () => isFetchingState;
+  const finding = () => isFetching || isFetchingNextPage;
+
+  const fetchNextList = hasNextPage ? fetchNextPage : () => {};
 
   return {
-    get: useGet,
+    get: getPokemonList,
+    fetchNextList,
     finding,
   };
 };
